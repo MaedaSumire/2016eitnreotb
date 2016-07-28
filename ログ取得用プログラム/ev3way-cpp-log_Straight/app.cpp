@@ -204,7 +204,7 @@ void main_task(intptr_t unused) {
 		sprintf(cBuff, "Main,%d,%d\n", clock->now(), g_unBrightness);
 		fputs(cBuff, bt); // エコーバック
 
-		clock->sleep(1); /* 4msec周期起動 */
+		clock->sleep(3); /* 4msec周期起動 */
 	}
 	leftMotor->reset();
 	rightMotor->reset();
