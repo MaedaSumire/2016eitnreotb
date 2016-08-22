@@ -200,12 +200,26 @@ void main_task(intptr_t unused)
 
 			nBri = p + i + d;
         	
-     
+        	if( target_Bri - 5 < nBri && nBri < target_Bri+5 ){
+        		turn	= 0;
+        	}else{
+        		if( nBri > target_Bri + 10 ){
+                	turn -=  5; /* 右旋回命令 */
+        		}else if( nBri > target_Bri + 5 ){	
+                	turn -=  2; /* 右旋回命令 */
+  				}else if( nBri < target_Bri - 10 ){	
+                	turn +=  5; /* 左旋回命令 */
+            	}else{	
+                	turn += 2; /* 左旋回命令 */
+            	}
+        	}
         	
-        	
-        	turn = (target_Bri - nBri) * 0.4;
-        	
-     
+        	if(forward < 10)
+        		forward = 10;
+        	if(turn > 20)
+        		turn = 20;
+        	if(turn < -20)
+        		turn = -20;
         }
 
         /* 倒立振子制御API に渡すパラメータを取得する */
@@ -233,8 +247,8 @@ void main_task(intptr_t unused)
 
         // ログ
         char	cBuff[1024];
-		sprintf(cBuff,"Main,%d,%d,%d\n",
-				clock->now(),nBri,turn);
+		sprintf(cBuff,"Main,%d,%d\n",
+				clock->now(),nBri);
 		fputs( cBuff, bt ); // エコーバック
 
         clock->sleep(3); /* 4msec周期起動 */
