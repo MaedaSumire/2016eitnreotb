@@ -34,8 +34,8 @@ static FILE *bt = NULL; /* Bluetoothファイルハンドル */
 
 /* 下記のマクロは個体/環境に合わせて変更する必要があります */
 #define GYRO_OFFSET           0  /* ジャイロセンサオフセット値(角速度0[deg/sec]時) */
-#define LIGHT_WHITE          40  /* 白色の光センサ値 */
-#define LIGHT_BLACK           0  /* 黒色の光センサ値 */
+#define LIGHT_WHITE          42  /* 白色の光センサ値 */
+#define LIGHT_BLACK           2  /* 黒色の光センサ値 */
 #define SONAR_ALERT_DISTANCE 30  /* 超音波センサによる障害物検知距離[cm] */
 #define TAIL_ANGLE_STAND_UP  93  /* 完全停止時の角度[度] */
 #define TAIL_ANGLE_DRIVE      3  /* バランス走行時の角度[度] */
@@ -111,9 +111,9 @@ void main_task(intptr_t unused) {
 
 	/* Bluetooth通信タスクの起動 */
 	act_tsk (BT_TASK);
-	
+
 	ev3_led_set_color(LED_ORANGE); /* 初期化完了通知 */
-	
+
 	char cBuff[1024];
 	sprintf(cBuff, "PID制御(turn)_P:0.4 I:1.0 D:0.0\n ,クロック,P制御turn,センサ値輝度,モータ\n");
 	fputs(cBuff, bt); // エコーバック
@@ -159,9 +159,9 @@ void main_task(intptr_t unused) {
 	/**
 	 * Main loop for the self-balance control algorithm
 	 */
-	
+
 	uint32_t unStartTime	= clock->now();
-	
+
 	while (1) {
 		if (ev3_button_is_pressed(BACK_BUTTON))
 			break;
@@ -172,32 +172,38 @@ void main_task(intptr_t unused) {
 		{
 			forward = turn = 0; /* 障害物を検知したら停止 */
 		} else {
-			forward = 40; /* 前進命令 */
+			forward = 30; /* 前進命令 */
 			g_unBrightness  = colorSensor->getBrightness();
-			nBri = 26;
-			
+			nBri = ((LIGHT_WHITE - LIGHT_BLACK)/ 2)*1.1;
+
+			if(g_unBrightness > LIGHT_WHITE * 1.1){
+				g_unBrightness = LIGHT_WHITE * 1.1;
+			}else if(g_unBrightness  < LIGHT_BLACK){
+				g_unBrightness = LIGHT_BLACK;
+			}
+
 			if( clock->now() - unStartTime > 1000){
-				
-				
-				
+
+
+
         		//PID
         		diff[0] = diff[1];
         		diff[1] = nBri - g_unBrightness;
         		integral += (diff[1] + diff[0]) / 2.0 * DELTA_T;
-				
+
 				p = KP * diff[1];
 				i = KI * integral;
 				d = KD * (diff[1] - diff[0]) / DELTA_T;
-				
+
         		turn = p+ i + d;
-			
+
 				if(turn < -100 ){
 					turn = -100;
 				}else if (turn > 100){
 					turn = 100;
 				}
 			}
-			
+
 		}
 
 		/* 倒立振子制御API に渡すパラメータを取得する */
