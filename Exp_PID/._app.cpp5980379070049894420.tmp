@@ -68,6 +68,14 @@ int32_t nBri;
 static int32_t sonar_alert(void);
 static void tail_control(int32_t angle);
 
+
+typedef struct{
+	int brightness;
+	int turningValue;
+} SDD ;
+SDD SectionDecisionDataGet(int now_section);
+
+
 /* オブジェクトへのポインタ定義 */
 TouchSensor* touchSensor;
 SonarSensor* sonarSensor;
@@ -97,6 +105,8 @@ void main_task(intptr_t unused) {
 	rightMotor = new Motor(PORT_B);
 	tailMotor = new Motor(PORT_A);
 	clock = new Clock();
+	
+	SDD nowSDD2;
 
 	/* LCD画面表示 */
 	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
@@ -202,6 +212,9 @@ void main_task(intptr_t unused) {
 				}else if (turn > 100){
 					turn = 100;
 				}
+				
+				nowSDD2 = SectionDecisionDataGet(1);
+				
 			}
 
 		}
@@ -308,3 +321,22 @@ void bt_task(intptr_t unused) {
 		fputc(c, bt); /* エコーバック */
 	}
 }
+
+
+//****************************************
+//区間データ群を返却する関数
+//
+//使い方はmethod.txtを参照。
+//****************************************
+SDD SectionDecisionDataGet(int now_section){
+
+	int Data_brightness[8] = {0,1,2,3,4,5,6,7};
+	int Data_turningValue[8] = {0,1,2,3,4,5,6,7};
+	SDD nowSDD;
+	
+	
+	nowSDD.brightness = Data_brightness[now_section];
+	nowSDD.turningValue = Data_turningValue[now_section];
+
+	return nowSDD;
+};
