@@ -43,6 +43,13 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.141793780" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option id="gnu.cpp.compiler.option.optimization.level.1185403891" name="最適化レベル" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.551255177" name="デバッグ・レベル" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.include.paths.997971202" name="インクルード・パス (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;C:\cygwin64\home\hrp2\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\cygwin64\home\hrp2\sdk\common\ev3api\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\cygwin64\home\hrp2\sdk\common\library\lib2\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\cygwin64\home\hrp2\sdk\common\library\libcpp-ev3\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\cygwin64\home\hrp2\sdk\common\library\libcpp-test\include&quot;"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.801491971" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 						</toolChain>
