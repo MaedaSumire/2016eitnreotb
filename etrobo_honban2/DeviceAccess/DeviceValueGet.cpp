@@ -17,29 +17,19 @@ DeviceValueGet::DeviceValueGet(ev3api::TouchSensor* touchSensor,
 		 mTailMotor(tailMotor){
 }
 
-bool DeviceValueGet::TouchSensorGetter(){
-	return mTouchSensor->isPressed();
-}
+DeviceValue DeviceValueGet::DeviceValueGetter(){
+	DeviceValue DV;
+	DV.touch = mTouchSensor->isPressed();
+	DV.sonar = mSonarSensor->getDistance();
+	DV.color = mColorSensor->getBrightness();
+	DV.gyro = mGyroSensor->getAnglerVelocity();
+	DV.Lmotor_angle = mLeftMotor->getCount();
+	DV.Rmotor_angle = mRightMotor->getCount();
+	DV.Tmotor = mTailMotor->getCount();
+	DV.volt = ev3_battery_voltage_mV();
+	DV.Lmotor_pwm;
+	DV.Rmotor_pwm;
 
-int16_t DeviceValueGet::SonarSensorGetter(){
-	return mSonarSensor->getDistance();
-}
-int8_t DeviceValueGet::ColorSensorGetter(){
-	return mColorSensor->getBrightness();
-}
+	return DV;
 
-int16_t DeviceValueGet::GyroSensorGetter(){
-	return mGyroSensor->getAngle();
-}
-
-int32_t DeviceValueGet::LeftMotorGetter(){
-	return mLeftMotor->getCount();
-}
-
-int32_t DeviceValueGet::RightMotorGetter(){
-	return mRightMotor->getCount();
-}
-
-int32_t DeviceValueGet::TailMotorGetter(){
-	return mTailMotor->getCount();
 }

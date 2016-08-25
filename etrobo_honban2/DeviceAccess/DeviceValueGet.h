@@ -8,6 +8,19 @@
 #include "GyroSensor.h"
 #include "Motor.h"
 
+typedef struct{
+	bool touch;
+	int16_t sonar;
+	int8_t color;
+	int16_t gyro;
+	int32_t Lmotor_angle;
+	int32_t Rmotor_angle;
+	int32_t Tmotor;
+	int GYRO_OFFSET = 0;
+	int32_t volt;
+	int8_t Lmotor_pwm;
+	int8_t Rmotor_pwm;
+} DeviceValue ;
 
 class DeviceValueGet {
 public:
@@ -18,14 +31,7 @@ public:
 				   ev3api::Motor* leftMotor,
 				   ev3api::Motor* rightMotor,
 				   ev3api::Motor* tailMotor);
-	
-	bool TouchSensorGetter();
-	int16_t SonarSensorGetter();
-	int8_t ColorSensorGetter();
-	int16_t GyroSensorGetter();
-	int32_t LeftMotorGetter();
-	int32_t RightMotorGetter();
-	int32_t TailMotorGetter();
+	DeviceValue DeviceValueGetter();
 
 private:
 		ev3api::TouchSensor* mTouchSensor;

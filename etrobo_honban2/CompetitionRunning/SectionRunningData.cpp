@@ -2,23 +2,17 @@
 
 SectionRunningData::SectionRunningData()
 {
-	mKP[7] = {1,2,3,4,5,6,7};
-	mKI[7] = {1,2,3,4,5,6,7};
-	mKD[7] = {1,2,3,4,5,6,7};
-	mforward[7] = {1,2,3,4,5,6,7};
-
-	typedef struct{
-		double KP;
-		double KI;
-		double KD;
-		double forward;
-	} SRD ;
 
 }
 
 SRD SectionRunningData::referData(int now_section){
 
 	SRD srd;
+
+	double mKP[7] = {1.4};
+	double mKI[7] = {0.2};
+	double mKD[7] = {0.02};
+	double mforward[7] = {30};
 
 	srd.KP = mKP[now_section];
 	srd.KI = mKI[now_section];

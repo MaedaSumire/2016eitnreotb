@@ -7,7 +7,7 @@ typedef struct{
 	double KP;
 	double KI;
 	double KD;
-	double forward;
+	float forward;
 } SRD ;
 
 class SectionRunningData {
@@ -17,10 +17,7 @@ public:
 	SRD referData(int now_section);
 
 private:
-	double mKP[7];
-	double mKI[7];
-	double mKD[7];
-	double mforward[7];
+
 };
 
 #endif  // SECTIONRUNNINGDATA_H_

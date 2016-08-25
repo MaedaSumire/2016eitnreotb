@@ -1,7 +1,7 @@
 #include "SectionRunningDataGet.h"
 
 SectionRunningDataGet::SectionRunningDataGet(SectionRunningData* SectionRunningData)
-	:mSectionRunningData(SectionRunningData){
+	:mSectionRunningData(){
 }
 
 SRD SectionRunningDataGet::SectionRunningDataGetter(int now_section){

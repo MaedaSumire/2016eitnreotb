@@ -11,6 +11,12 @@
 #include "MotorDrive.h"
 #include "DeviceValueGet.h"
 
+#include "SectionRunningData.h"
+#include "PIDCalculation.h"
+#include "SectionRunningDataGet.h"
+#include "RunningCalculation.h"
+#include "RunningController.h"
+
 #include "ev3api.h"
 #include "app.h"
 #include "balancer.h"
@@ -71,8 +77,15 @@ Motor* leftMotor;
 Motor* rightMotor;
 Motor* tailMotor;
 Clock* clock;
+
 MotorDrive* motorDrive;
 DeviceValueGet* deviceValueGet;
+
+PIDCalculation* pidcalculation;
+SectionRunningData* sectionrunningdata;
+SectionRunningDataGet* sectionrunningdataget;
+RunningCalculation* runningcalculation;
+RunningController* runningcontroller;
 
 //グローバル変数
 int32_t g_motor_ang_l, g_motor_ang_r, g_gyro, g_volt;
@@ -80,9 +93,8 @@ uint8_t g_unAmbient, g_unBrightness;
 
 /* メインタスク */
 void main_task(intptr_t unused) {
-	int8_t forward; /* 前後進命令 */
-	int8_t turn; /* 旋回命令 */
-	int8_t pwm_L, pwm_R; /* 左右モータPWM出力 */
+	int now_section = 1;
+	int forward = 40; /* 前進命令 */
 
 	/* 各オブジェクトを生成・初期化する */
 	touchSensor = new TouchSensor(PORT_1);
@@ -93,6 +105,7 @@ void main_task(intptr_t unused) {
 	rightMotor = new Motor(PORT_B);
 	tailMotor = new Motor(PORT_A);
 	clock = new Clock();
+
 	motorDrive = new MotorDrive(leftMotor, rightMotor, tailMotor);
 	deviceValueGet = new DeviceValueGet(touchSensor,
 			sonarSensor,
@@ -100,8 +113,14 @@ void main_task(intptr_t unused) {
 			gyroSensor,
 			leftMotor,
 			rightMotor,
-			tailMotor
-			);
+			tailMotor);
+
+	sectionrunningdata = new SectionRunningData();
+	pidcalculation = new PIDCalculation();
+	sectionrunningdataget = new SectionRunningDataGet(sectionrunningdata);
+	runningcalculation = new RunningCalculation(sectionrunningdataget,pidcalculation);
+	runningcontroller = new RunningController(deviceValueGet,runningcalculation,motorDrive);
+
 
 	/* LCD画面表示 */
 	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
@@ -119,9 +138,9 @@ void main_task(intptr_t unused) {
 	
 	ev3_led_set_color(LED_ORANGE); /* 初期化完了通知 */
 	
-	char cBuff[1024];
-	sprintf(cBuff, "PID制御(turn)_P:0.4 I:1.0 D:0.0\n ,クロック,P制御turn,センサ値輝度,モータ\n");
-	fputs(cBuff, bt); // エコーバック
+//	char cBuff[1024];
+//	sprintf(cBuff, "PID制御(turn)_P:0.4 I:1.0 D:0.0\n ,クロック,P制御turn,センサ値輝度,モータ\n");
+//	fputs(cBuff, bt); // エコーバック
 
 	/* スタート待機 */
 	while (1) {
@@ -143,7 +162,7 @@ void main_task(intptr_t unused) {
 			break; /* リモートスタート */
 		}
 
-		if (deviceValueGet->TouchSensorGetter()) {
+		if ((deviceValueGet->DeviceValueGetter()).touch) {
 			break; /* タッチセンサが押された */
 		}
 		g_unBrightness  = colorSensor->getBrightness();
@@ -173,42 +192,28 @@ void main_task(intptr_t unused) {
 
 		tail_control(TAIL_ANGLE_DRIVE); /* バランス走行用角度に制御 */
 
-		if (sonar_alert() == 1) /* 障害物検知 */
-		{
-			forward = turn = 0; /* 障害物を検知したら停止 */
-		} else {
-			forward = 40; /* 前進命令 */
-			g_unBrightness  = colorSensor->getBrightness();
-			nBri = 26;
-			
-			if( clock->now() - unStartTime > 1000){
-				
-				
-			//PID
 
-			}
-			
-		}
+		g_unBrightness  = colorSensor->getBrightness();
+		//nBri = 26;
 
-		/* 倒立振子制御API に渡すパラメータを取得する */
-		g_motor_ang_l = leftMotor->getCount();
-		g_motor_ang_r = rightMotor->getCount();
-		g_gyro = gyroSensor->getAnglerVelocity();
-		g_volt = ev3_battery_voltage_mV();
 
-		/* 倒立振子制御APIを呼び出し、倒立走行するための */
-		/* 左右モータ出力値を得る */
-		balance_control((float) forward, (float) turn, (float) g_gyro,
-				(float) GYRO_OFFSET, (float) g_motor_ang_l,
-				(float) g_motor_ang_r, (float) g_volt, (int8_t *) &pwm_L,
-				(int8_t *) &pwm_R);
+//		if (sonar_alert() == 1) /* 障害物検知 */
+//		{
+//			forward = turn = 0; /* 障害物を検知したら停止 */
+//		}
 
-		motorDrive->LRMotorDrive(pwm_L,pwm_R);
+
+		runningcontroller->RunningExecute(now_section);
 
 		// ログ
-		char cBuff[1024];
-		sprintf(cBuff, "Main,%d,%d,%d,%d, %d, %d\n", clock->now(), turn,g_unBrightness,g_motor_ang_l, g_motor_ang_r, g_gyro);
-		fputs(cBuff, bt); // エコーバック
+//		char cBuff[1024];
+//		sprintf(cBuff, "Main,%d,%d,%d,%d, %d, %d\n", clock->now(), turn,g_unBrightness,g_motor_ang_l, g_motor_ang_r, g_gyro);
+//		fputs(cBuff, bt); // エコーバック
+
+	char cBuff[1024];
+	sprintf(cBuff, "Main,%d,%d\n", clock->now(), turn);
+	fputs(cBuff, bt); // エコーバック
+
 
 		clock->sleep(3); /* 4msec周期起動 */
 	}

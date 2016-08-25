@@ -4,8 +4,12 @@ APPL_COBJS += balancer.o balancer_param.o
 
 APPL_CXXOBJS += \
 	DeviceValueGet.o \
-	MotorDrive.o
-
+	MotorDrive.o \
+	SectionRunningData.o \
+	PIDCalculation.o \
+	SectionRunningDataGet.o \
+	RunningCalculation.o \
+	RunningController.o
 
 SRCLANG := c++
 

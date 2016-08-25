@@ -14,18 +14,19 @@ public:
 	PIDCalculation();
 
 	void Calibrate(int8_t DBBlack, int8_t DBWhite, int8_t DBGray);
-	double PIDCalculate(struct SRD SectionRunningData,int8_t DeviceBrightness);
+	double PIDCalculate(SRD SectionRunningData,int8_t DeviceBrightness);
 
 private:
-	static double diff[2];
-	static double	integral;
-	double p, i, d;
-	int32_t nBri;
-	double KP,KI,KD;
-
 	int8_t mBlack;
 	int8_t mWhite;
 	int8_t mGray;
+
+	double diff1;
+	double diff2;
+	double	integral;
+	double p, i, d;
+	double turn;
+	int32_t nBri;
 
 };
 

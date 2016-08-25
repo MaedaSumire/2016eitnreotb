@@ -1,3 +1,4 @@
+//倒立走行演算
 /**
  ******************************************************************************
  **	FILE NAME  : balancer.c
@@ -170,6 +171,7 @@ static float ud_thetadot_cmd_lpf;   /* 左右車輪の目標平均回転角速�
 //*****************************************************************************
 
 /* Model step function */
+//メソッド:　void モータ出力値を演算する（倒立振子制御APIの引数）
 void balance_control(float args_cmd_forward, float args_cmd_turn, float
                      args_gyro, float args_gyro_offset, float
                      args_theta_m_l, float args_theta_m_r, float
