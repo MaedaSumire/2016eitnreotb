@@ -12,7 +12,7 @@ public:
 	RunningController(DeviceValueGet* DeviceValueGet,
 					RunningCalculation* RunningCalculation,
 					MotorDrive* MotorDrive);
-	void RunningExecute(int now_section);
+	int8_t RunningExecute(int now_section);
 
 
 private:

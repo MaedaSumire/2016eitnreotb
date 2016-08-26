@@ -226,12 +226,17 @@ void main_task(intptr_t unused) {
 				(float) g_motor_ang_r, (float) g_volt, (int8_t *) &pwm_L,
 				(int8_t *) &pwm_R);
 
-		leftMotor->setPWM(pwm_L);
-		rightMotor->setPWM(pwm_R);
+		//leftMotor->setPWM(pwm_L);
+		//rightMotor->setPWM(pwm_R);
 
 		// ログ
+//		char cBuff[1024];
+//		sprintf(cBuff, "Main,%d,%d,%d,%d, %d, %d\n", clock->now(), turn,g_unBrightness,g_motor_ang_l, g_motor_ang_r, g_gyro);
+//		fputs(cBuff, bt); // エコーバック
+
+
 		char cBuff[1024];
-		sprintf(cBuff, "Main,%d,%d,%d,%d, %d, %d\n", clock->now(), turn,g_unBrightness,g_motor_ang_l, g_motor_ang_r, g_gyro);
+		sprintf(cBuff, "Main,%d,%d\n", pwm_L, pwm_R);
 		fputs(cBuff, bt); // エコーバック
 
 		clock->sleep(3); /* 4msec周期起動 */

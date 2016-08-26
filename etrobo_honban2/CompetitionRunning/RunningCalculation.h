@@ -13,7 +13,7 @@ public:
 
 	RunningCalculation(SectionRunningDataGet* SectionRunningDataGet,
 			PIDCalculation* PIDCalculation);
-	void RunningCalculate(DeviceValue dv,int now_section);
+	int8_t RunningCalculate(DeviceValue dv,int now_section);
 
 
 private:

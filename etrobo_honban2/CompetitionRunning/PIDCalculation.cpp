@@ -32,7 +32,6 @@ void PIDCalculation::Calibrate(int8_t DBBlack, int8_t DBWhite, int8_t DBGray){
 double PIDCalculation::PIDCalculate(SRD srd,int8_t DeviceBrightness){
 
 
-
 	//PID
 	diff1 = diff2;
 	diff2 = nBri - DeviceBrightness;
