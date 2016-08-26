@@ -16,7 +16,7 @@ typedef struct{
 	int32_t Lmotor_angle;
 	int32_t Rmotor_angle;
 	int32_t Tmotor;
-	int GYRO_OFFSET = 0;
+	int GYRO_OFFSET;
 	int32_t volt;
 	int8_t Lmotor_pwm;
 	int8_t Rmotor_pwm;

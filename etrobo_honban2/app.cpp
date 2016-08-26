@@ -203,7 +203,7 @@ void main_task(intptr_t unused) {
 //		}
 
 
-		int8_t x = runningcontroller->RunningExecute(now_section);
+		double x = runningcontroller->RunningExecute(now_section);
 
 		// ログ
 //		char cBuff[1024];
@@ -211,7 +211,7 @@ void main_task(intptr_t unused) {
 //		fputs(cBuff, bt); // エコーバック
 
 	char cBuff[1024];
-	sprintf(cBuff, "Main+++,%d\n",  x);
+	sprintf(cBuff, "Main+++,%f\n",  x);
 	fputs(cBuff, bt); // エコーバック
 
 
