@@ -27,13 +27,8 @@ DeviceValue DeviceValueGet::DeviceValueGetter(){
 	DV.Rmotor_angle = mRightMotor->getCount();
 	DV.Tmotor = mTailMotor->getCount();
 	DV.volt = ev3_battery_voltage_mV();
-<<<<<<< HEAD
-	DV.Lmotor_pwm = &DV.Lmotor_pwm;
-	DV.Rmotor_pwm = &DV.Rmotor_pwm;
-=======
 	DV.Lmotor_pwm;
 	DV.Rmotor_pwm;
->>>>>>> remotes/origin/maeda
 
 	return DV;
 
