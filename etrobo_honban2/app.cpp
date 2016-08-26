@@ -190,7 +190,7 @@ void main_task(intptr_t unused) {
 		if (ev3_button_is_pressed(BACK_BUTTON))
 			break;
 
-		tail_control(TAIL_ANGLE_DRIVE); /* バランス走行用角度に制御 */
+		tail_control(TAIL_ANGLE_DRIVE); /*a バランス走行用角度に制御 */
 
 
 		g_unBrightness  = colorSensor->getBrightness();
