@@ -21,7 +21,11 @@ int8_t RunningController::RunningExecute(int now_section){
 	turn = mRunningCalculation->RunningCalculate(dv,now_section);
 
 	//モーターに指示を出す
+<<<<<<< HEAD
 	//mMotorDrive->LRMotorDrive(dv.Lmotor_pwm,dv.Rmotor_pwm);
+=======
+	mMotorDrive->LRMotorDrive(dv.Lmotor_pwm,dv.Rmotor_pwm);
+>>>>>>> remotes/origin/maeda
 
 	return turn;
 }

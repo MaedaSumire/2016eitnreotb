@@ -18,8 +18,13 @@ typedef struct{
 	int32_t Tmotor;
 	int GYRO_OFFSET = 0;
 	int32_t volt;
+<<<<<<< HEAD
 	signed char Lmotor_pwm;
 	signed char Rmotor_pwm;
+=======
+	int8_t Lmotor_pwm;
+	int8_t Rmotor_pwm;
+>>>>>>> remotes/origin/maeda
 } DeviceValue ;
 
 class DeviceValueGet {
