@@ -8,7 +8,7 @@ RunningCalculation::RunningCalculation(SectionRunningDataGet* SectionRunningData
 }
 
 //メソッド：void 走行演算する（デバイス値（構造体）、現区間の番号）
-double RunningCalculation::RunningCalculate(DeviceValue dv,int now_section){
+DeviceValue RunningCalculation::RunningCalculate(DeviceValue dv,int now_section){
 	SRD srd;
 	double turn;
 
@@ -22,5 +22,5 @@ double RunningCalculation::RunningCalculate(DeviceValue dv,int now_section){
 	balance_control((float)srd.forward, (float)turn, (float)dv.gyro,(float)dv.GYRO_OFFSET, (float)dv.Lmotor_angle,
 			(float)dv.Rmotor_angle, (float)dv.volt, (int8_t *)&dv.Lmotor_pwm, (int8_t *)&dv.Rmotor_pwm);
 
-	return turn;
+	return dv;
 }

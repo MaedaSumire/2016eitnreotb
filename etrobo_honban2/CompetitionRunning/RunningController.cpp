@@ -10,19 +10,17 @@ RunningController::RunningController(DeviceValueGet* DeviceValueGet,
 }
 
 //メソッド： void 走行する（現区間の番号）
-double RunningController::RunningExecute(int now_section){
+void RunningController::RunningExecute(int now_section){
 	DeviceValue dv;
-	double turn;
 
 	//現在のデバイス値を持ってくる
 	dv = mDeviceValueGet->DeviceValueGetter();
 
 	//pwm値を演算する
-	turn = mRunningCalculation->RunningCalculate(dv,now_section);
+	dv = mRunningCalculation->RunningCalculate(dv,now_section);
 
 	//モーターに指示を出す
 	mMotorDrive->LRMotorDrive(dv.Lmotor_pwm,dv.Rmotor_pwm);
 
-	return turn;
 }
 

@@ -49,6 +49,6 @@ double PIDCalculation::PIDCalculate(SRD srd,int8_t DeviceBrightness){
 		turn = 100.0;
 	}
 
-	return 0;
+	return turn;
 
 }
