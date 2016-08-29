@@ -17,6 +17,13 @@
 #include "RunningCalculation.h"
 #include "RunningController.h"
 
+#include "SectionDecisionData.h"
+#include "SectionDecisionDataGet.h"
+#include "SectionDecision.h"
+#include "SectionDecisionController.h"
+
+#include "CompetitionRunning.h"
+
 #include "ev3api.h"
 #include "app.h"
 #include "balancer.h"
@@ -73,26 +80,6 @@ static double tail_angle_stand_up = 93;/* 完全停止時の角度[度] (2016/06
 static int32_t sonar_alert(void);
 static void tail_control(int32_t angle);
 
-/* オブジェクトへのポインタ定義
-TouchSensor* touchSensor;
-SonarSensor* sonarSensor;
-ColorSensor* colorSensor;
-GyroSensor* gyroSensor;
-Motor* leftMotor;
-Motor* rightMotor;
-Motor* tailMotor;
-Clock* clock;
-
-MotorDrive* motorDrive;
-DeviceValueGet* deviceValueGet;
-
-PIDCalculation* pidcalculation;
-SectionRunningData* sectionrunningdata;
-SectionRunningDataGet* sectionrunningdataget;
-RunningCalculation* runningcalculation;
-RunningController* runningcontroller;
-*/
-
 // Device objects
 // オブジェクトを静的に確保する
 TouchSensor gTouchSensor(PORT_1);
@@ -113,39 +100,34 @@ static SectionRunningDataGet *gSectionrunningdataget;
 static RunningCalculation *gRunningcalculation;
 static RunningController *gRunningcontroller;
 
+static SectionDecisionData *gSectiondecisiondata;
+static SectionDecisionDataGet *gSectiondecisiondataget;
+static SectionDecision *gSectiondecision;
+static SectionDecisionController *gSectiondecisioncontroller;
+
+static CompetitionRunning *gCompetitionrunning;
+
 //グローバル変数
 int32_t g_motor_ang_l, g_motor_ang_r, g_gyro, g_volt;
 uint8_t g_unAmbient, g_unBrightness;
 
 /* メインタスク */
 void main_task(intptr_t unused) {
-	int now_section = 1;
-	int forward = 40; /* 前進命令 */
-
-	/* 各オブジェクトを生成・初期化する
-	touchSensor = new TouchSensor(PORT_1);
-	sonarSensor = new SonarSensor(PORT_2);
-	colorSensor = new ColorSensor(PORT_3);
-	gyroSensor = new GyroSensor(PORT_4);
-	leftMotor = new Motor(PORT_C);
-	rightMotor = new Motor(PORT_B);
-	tailMotor = new Motor(PORT_A);
-	clock = new Clock();*/
-
 	gMotorDrive = new MotorDrive(gLeftMotor, gRightMotor, gTailMotor);
-	gDeviceValueGet = new DeviceValueGet(gTouchSensor,
-			gSonarSensor,
-			gColorSensor,
-			gGyroSensor,
-			gLeftMotor,
-			gRightMotor,
-			gTailMotor);
+	gDeviceValueGet = new DeviceValueGet(gTouchSensor, gSonarSensor, gColorSensor, gGyroSensor, gLeftMotor, gRightMotor, gTailMotor);
 
 	gSectionrunningdata = new SectionRunningData();
 	gPidcalculation = new PIDCalculation();
 	gSectionrunningdataget = new SectionRunningDataGet(gSectionrunningdata);
 	gRunningcalculation = new RunningCalculation(gSectionrunningdataget,gPidcalculation);
 	gRunningcontroller = new RunningController(gDeviceValueGet,gRunningcalculation,gMotorDrive);
+
+	gSectiondecisiondata = new SectionDecisionData();
+	gSectiondecisiondataget = new SectionDecisionDataGet(gSectiondecisiondata);
+	gSectiondecision = new SectionDecision(gSectiondecisiondataget);
+	gSectiondecisioncontroller = new SectionDecisionController(gSectiondecision, gDeviceValueGet);
+
+	gCompetitionrunning = new CompetitionRunning(gRunningcontroller, gSectiondecisioncontroller);
 
 	/* LCD画面表示 */
 	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
@@ -228,11 +210,11 @@ void main_task(intptr_t unused) {
 //		}
 
 
-		gRunningcontroller->RunningExecute(now_section);
+		gCompetitionrunning-> CompetitionRun();
 
 		// ログ
 //		char cBuff[1024];
-//		sprintf(cBuff, "Main,%d,%d,%d,%d, %d, %d\n", clock->now(), turn,g_unBrightness,g_motor_ang_l, g_motor_ang_r, g_gyro);
+//		sprintf(cBuff, "Main,%d\n", gClock.now());
 //		fputs(cBuff, bt); // エコーバック
 
 

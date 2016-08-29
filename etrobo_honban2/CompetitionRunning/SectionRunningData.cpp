@@ -1,8 +1,6 @@
 #include "SectionRunningData.h"
 
-SectionRunningData::SectionRunningData()
-{
-
+SectionRunningData::SectionRunningData(){
 }
 
 SRD SectionRunningData::referData(int now_section){
@@ -12,7 +10,7 @@ SRD SectionRunningData::referData(int now_section){
 	double mKP[7] = {1.4,1.4,1.4,1.4,1.4,1.4,1.4};
 	double mKI[7] = {0.2,0.2,0.2,0.2,0.2,0.2,0.2};
 	double mKD[7] = {0.02,0.02,0.02,0.02,0.02,0.02,0.02};
-	double mforward[7] = {30,30,30,30,30,30,30};
+	float mforward[7] = {30,30,30,30,30,30,30};
 
 	srd.KP = mKP[now_section];
 	srd.KI = mKI[now_section];

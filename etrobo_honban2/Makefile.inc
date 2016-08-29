@@ -9,7 +9,13 @@ APPL_CXXOBJS += \
 	PIDCalculation.o \
 	SectionRunningDataGet.o \
 	RunningCalculation.o \
-	RunningController.o
+	RunningController.o \
+	SectionDecisionData.o \
+	SectionDecisionDataGet.o \
+	SectionDecision.o \
+	SectionDecisionController.o \
+	CompetitionRunning.o
+
 
 SRCLANG := c++
 
