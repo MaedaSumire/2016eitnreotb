@@ -1,8 +1,11 @@
+//区間走行データ
 #include "RunningData.h"
 
 RunningData::RunningData(){
 }
 
+//RD = RunningData
+//メソッド: RD 参照する(現区間の番号)　return 現区間走行データ
 RD RunningData::referData(int now_section){
 
 	RD rd;

@@ -20,7 +20,7 @@ typedef struct{
 	int32_t volt;
 	int8_t Lmotor_pwm = 0;
 	int8_t Rmotor_pwm = 0;
-} DeviceValue ;
+} DV ;
 
 class DeviceValueGet {
 public:
@@ -31,7 +31,7 @@ public:
 				   ev3api::Motor& leftMotor,
 				   ev3api::Motor& rightMotor,
 				   ev3api::Motor& tailMotor);
-	DeviceValue DeviceValueGetter();
+	DV DeviceValueGetter();
 
 private:
 		ev3api::TouchSensor& mTouchSensor;

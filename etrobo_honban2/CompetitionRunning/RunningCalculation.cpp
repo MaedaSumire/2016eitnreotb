@@ -1,14 +1,15 @@
 //走行演算
 #include "RunningCalculation.h"
 
-RunningCalculation::RunningCalculation(RunningDataGet* RunningDataGet,
-										PIDCalculation* PIDCalculation)
-	:mPIDCalculation(PIDCalculation),
-	mRunningDataGet(RunningDataGet){
+RunningCalculation::RunningCalculation(PIDCalculation* pidcalculation,
+										RunningDataGet* runningdataget)
+	:mPIDCalculation(pidcalculation),
+	 mRunningDataGet(runningdataget){
 }
 
+//DV = DeviceValue
 //メソッド：void 走行演算する（デバイス値（構造体）、現区間の番号）
-DeviceValue RunningCalculation::RunningCalculate(DeviceValue dv,int now_section){
+DV RunningCalculation::RunningCalculate(DV dv,int now_section){
 	RD rd;
 	double turn;
 

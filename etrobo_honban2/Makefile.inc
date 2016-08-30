@@ -3,8 +3,9 @@ mkfile_path := $(dir $(lastword $(MAKEFILE_LIST)))
 APPL_COBJS += balancer.o balancer_param.o
 
 APPL_CXXOBJS += \
-	DeviceValueGet.o \
 	MotorDrive.o \
+	DeviceValueGet.o \
+	UIGet.o \
 	RunningData.o \
 	PIDCalculation.o \
 	RunningDataGet.o \
@@ -14,7 +15,12 @@ APPL_CXXOBJS += \
 	SectionDecisionDataGet.o \
 	SectionDecision.o \
 	SectionDecisionController.o \
-	CompetitionRunning.o
+	CompetitionRunning.o \
+	ColorGet.o \
+	PostureAdjustment.o \
+	CalibrationController.o \
+	StartInstructionGet.o \
+	StartController.o
 
 
 SRCLANG := c++
@@ -26,10 +32,11 @@ include $(EV3RT_SDK_LIB_DIR)/libcpp-ev3/Makefile
 
 endif
 
-APPL_DIR += $(mkfile_path)CompetitionRunning $(mkfile_path)DeviceAccess
+APPL_DIR += $(mkfile_path)CompetitionRunning $(mkfile_path)DeviceAccess $(mkfile_path)Calibration
 
 INCLUDES += \
 	-I$(mkfile_path)CompetitionRunning \
-	-I$(mkfile_path)DeviceAccess
+	-I$(mkfile_path)DeviceAccess \
+	-I$(mkfile_path)Calibration
 
 COPTS += -fno-use-cxa-atexit

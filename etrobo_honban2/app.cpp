@@ -10,6 +10,7 @@
 
 #include "MotorDrive.h"
 #include "DeviceValueGet.h"
+#include "UIGet.h"
 
 #include "RunningData.h"
 #include "PIDCalculation.h"
@@ -24,6 +25,12 @@
 
 #include "CompetitionRunning.h"
 
+#include "ColorGet.h"
+#include "PostureAdjustment.h"
+#include "CalibrationController.h"
+#include "StartInstructionGet.h"
+#include "StartController.h"
+
 #include "ev3api.h"
 #include "app.h"
 #include "balancer.h"
@@ -35,15 +42,13 @@
 #include "Clock.h"
 
 
-
-//using namespace ev3api;
-
 using ev3api::ColorSensor;
 using ev3api::SonarSensor;
 using ev3api::GyroSensor;
 using ev3api::TouchSensor;
 using ev3api::Motor;
 using ev3api::Clock;
+
 
 #define DEBUG
 
@@ -56,6 +61,7 @@ using ev3api::Clock;
 /* Bluetooth */
 static int32_t bt_cmd = 0; /* Bluetoothコマンド 1:リモートスタート */
 static FILE *bt = NULL; /* Bluetoothファイルハンドル */
+
 static double tail_angle_stand_up = 93;/* 完全停止時の角度[度] (2016/06/24_変更)*/
 
 /* 下記のマクロは個体/環境に合わせて変更する必要があります */
@@ -94,8 +100,9 @@ Clock gClock;
 // オブジェクトの定義
 static MotorDrive *gMotorDrive;
 static DeviceValueGet *gDeviceValueGet;
-static PIDCalculation *gPidcalculation;
+static UIGet *gUiGet;
 
+static PIDCalculation *gPidcalculation;
 static RunningData *gRunningdata;
 static RunningDataGet *gRunningdataget;
 static RunningCalculation *gRunningcalculation;
@@ -108,19 +115,31 @@ static SectionDecisionController *gSectiondecisioncontroller;
 
 static CompetitionRunning *gCompetitionrunning;
 
+static ColorGet *gColorGet;
+static PostureAdjustment *gPostureAdjustment;
+static CalibrationController *gCalibrationController;
+static StartInstructionGet *gStartInstructionGet;
+static StartController *gStartController;
+
+
 //グローバル変数
 int32_t g_motor_ang_l, g_motor_ang_r, g_gyro, g_volt;
 uint8_t g_unAmbient, g_unBrightness;
 
+
+
 /* メインタスク */
 void main_task(intptr_t unused) {
+
+	/*オブジェクトの生成*/
 	gMotorDrive = new MotorDrive(gLeftMotor, gRightMotor, gTailMotor);
 	gDeviceValueGet = new DeviceValueGet(gTouchSensor, gSonarSensor, gColorSensor, gGyroSensor, gLeftMotor, gRightMotor, gTailMotor);
+	gUiGet = new UIGet();
 
 	gRunningdata = new RunningData();
 	gPidcalculation = new PIDCalculation();
 	gRunningdataget = new RunningDataGet(gRunningdata);
-	gRunningcalculation = new RunningCalculation(gRunningdataget,gPidcalculation);
+	gRunningcalculation = new RunningCalculation(gPidcalculation, gRunningdataget);
 	gRunningcontroller = new RunningController(gDeviceValueGet,gRunningcalculation,gMotorDrive);
 
 	gSectiondecisiondata = new SectionDecisionData();
@@ -130,12 +149,19 @@ void main_task(intptr_t unused) {
 
 	gCompetitionrunning = new CompetitionRunning(gRunningcontroller, gSectiondecisioncontroller);
 
+	gColorGet = new ColorGet(gDeviceValueGet);
+	gPostureAdjustment = new PostureAdjustment(gDeviceValueGet, gMotorDrive);
+	gCalibrationController = new CalibrationController(gGyroSensor, gLeftMotor, gRightMotor, gTailMotor, gPostureAdjustment, gColorGet);
+	gStartInstructionGet = new StartInstructionGet();
+	gStartController = new StartController(gStartInstructionGet);
+
+
 	/* LCD画面表示 */
 	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
 	ev3_lcd_draw_string("EV3way-ET sample_cpp", 0, CALIB_FONT_HEIGHT * 1);
 
-	/* 尻尾モーターのリセット */
-	gTailMotor.reset();
+
+	/*キャリブレーション*/
 
 	/* Open Bluetooth file */
 	bt = ev3_serial_open_file(EV3_SERIAL_BT);
@@ -178,11 +204,9 @@ void main_task(intptr_t unused) {
 		gClock.sleep(10);
 	}
 
-	/* 走行モーターエンコーダーリセット */
+	/* 再度初期化 */
 	gLeftMotor.reset();
 	gRightMotor.reset();
-
-	/* ジャイロセンサーリセット */
 	gGyroSensor.reset();
 	balance_init(); /* 倒立振子API初期化 */
 
@@ -200,16 +224,12 @@ void main_task(intptr_t unused) {
 
 		tail_control(TAIL_ANGLE_DRIVE); /*a バランス走行用角度に制御 */
 
-
-		g_unBrightness  = gColorSensor.getBrightness();
+		//g_unBrightness  = gColorSensor.getBrightness();
 		//nBri = 26;
-
-
 //		if (sonar_alert() == 1) /* 障害物検知 */
 //		{
 //			forward = turn = 0; /* 障害物を検知したら停止 */
 //		}
-
 
 		gCompetitionrunning-> CompetitionRun();
 
@@ -222,13 +242,14 @@ void main_task(intptr_t unused) {
 
 		gClock.sleep(3); /* 4msec周期起動 */
 	}
+
+	/*終了処理*/
 	gLeftMotor.reset();
 	gRightMotor.reset();
-
 	ter_tsk(BT_TASK);
 	fclose(bt);
-
 	ext_tsk();
+
 }
 
 //*****************************************************************************

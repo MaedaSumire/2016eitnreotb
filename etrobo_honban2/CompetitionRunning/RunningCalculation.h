@@ -11,9 +11,9 @@
 class RunningCalculation {
 public:
 
-	RunningCalculation(RunningDataGet* RunningDataGet,
-			PIDCalculation* PIDCalculation);
-	DeviceValue RunningCalculate(DeviceValue dv,int now_section);
+	RunningCalculation(PIDCalculation* pidcalculation,
+			RunningDataGet* runningdataget);
+	DV RunningCalculate(DV dv,int now_section);
 
 
 private:
