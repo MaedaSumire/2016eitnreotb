@@ -18,29 +18,29 @@ typedef struct{
 	int32_t Tmotor;
 	int GYRO_OFFSET;
 	int32_t volt;
-	int8_t Lmotor_pwm;
-	int8_t Rmotor_pwm;
+	int8_t Lmotor_pwm = 0;
+	int8_t Rmotor_pwm = 0;
 } DeviceValue ;
 
 class DeviceValueGet {
 public:
-	DeviceValueGet(ev3api::TouchSensor* touchSensor,
-				   ev3api::SonarSensor* sonarSensor,
-				   ev3api::ColorSensor* colorSensor,
-				   ev3api::GyroSensor* gyroSensor,
-				   ev3api::Motor* leftMotor,
-				   ev3api::Motor* rightMotor,
-				   ev3api::Motor* tailMotor);
+	DeviceValueGet(ev3api::TouchSensor& touchSensor,
+				   ev3api::SonarSensor& sonarSensor,
+				   ev3api::ColorSensor& colorSensor,
+				   ev3api::GyroSensor& gyroSensor,
+				   ev3api::Motor& leftMotor,
+				   ev3api::Motor& rightMotor,
+				   ev3api::Motor& tailMotor);
 	DeviceValue DeviceValueGetter();
 
 private:
-		ev3api::TouchSensor* mTouchSensor;
-		ev3api::SonarSensor* mSonarSensor;
-		ev3api::ColorSensor* mColorSensor;
-		ev3api::GyroSensor* mGyroSensor;
-		ev3api::Motor* mLeftMotor;
-		ev3api::Motor* mRightMotor;
-		ev3api::Motor* mTailMotor;
+		ev3api::TouchSensor& mTouchSensor;
+		ev3api::SonarSensor& mSonarSensor;
+		ev3api::ColorSensor& mColorSensor;
+		ev3api::GyroSensor& mGyroSensor;
+		ev3api::Motor& mLeftMotor;
+		ev3api::Motor& mRightMotor;
+		ev3api::Motor& mTailMotor;
 };
 
 #endif  // EV3_APP_DEVICEVALUEGET_H_

@@ -13,7 +13,7 @@ public:
 
 private:
 
-	SectionRunningData mSectionRunningData;
+	SectionRunningData* mSectionRunningData;
 
 };
 
