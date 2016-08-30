@@ -52,8 +52,6 @@ static FILE *bt = NULL; /* Bluetoothファイルハンドル */
 #define TAIL_ANGLE_DRIVE      3  /* バランス走行時の角度[度] */
 #define P_GAIN             2.5F  /* 完全停止用モータ制御比例係数 */
 #define PWM_ABS_MAX          60  /* 完全停止用モータ制御PWM絶対最大値 */
-//#define DEVICE_NAME     "ET0"  /* Bluetooth名 hrp2/target/ev3.h BLUETOOTH_LOCAL_NAMEで設定 */
-//#define PASS_KEY        "1234" /* パスキー    hrp2/target/ev3.h BLUETOOTH_PIN_CODEで設定 */
 #define CMD_START         '1'    /* リモートスタートコマンド */
 
 
@@ -137,10 +135,6 @@ void main_task(intptr_t unused) {
 	act_tsk (BT_TASK);
 	
 	ev3_led_set_color(LED_ORANGE); /* 初期化完了通知 */
-	
-//	char cBuff[1024];
-//	sprintf(cBuff, "PID制御(turn)_P:0.4 I:1.0 D:0.0\n ,クロック,P制御turn,センサ値輝度,モータ\n");
-//	fputs(cBuff, bt); // エコーバック
 
 	/* スタート待機 */
 	while (1) {
@@ -158,14 +152,13 @@ void main_task(intptr_t unused) {
 		}
 		//ここまで
 
-		if (bt_cmd == 1) {
+		if (bt_cmd == CMD_START) {
 			break; /* リモートスタート */
 		}
 
 		if ((deviceValueGet->DeviceValueGetter()).touch) {
 			break; /* タッチセンサが押された */
 		}
-		g_unBrightness  = colorSensor->getBrightness();
 
 		clock->sleep(10);
 	}
@@ -184,31 +177,25 @@ void main_task(intptr_t unused) {
 	 * Main loop for the self-balance control algorithm
 	 */
 	
-	uint32_t unStartTime	= clock->now();
-	
 	while (1) {
+
+		double x; //デバッグ用変数
+
 		if (ev3_button_is_pressed(BACK_BUTTON))
 			break;
 
-		tail_control(TAIL_ANGLE_DRIVE); /*a バランス走行用角度に制御 */
+		tail_control(TAIL_ANGLE_DRIVE); /*バランス走行用角度に制御 */
 
 
 		g_unBrightness  = colorSensor->getBrightness();
-		//nBri = 26;
 
 
-//		if (sonar_alert() == 1) /* 障害物検知 */
-//		{
-//			forward = turn = 0; /* 障害物を検知したら停止 */
-//		}
-
-
-		double x = runningcontroller->RunningExecute(now_section);
-
-		// ログ
-//		char cBuff[1024];
-//		sprintf(cBuff, "Main,%d,%d,%d,%d, %d, %d\n", clock->now(), turn,g_unBrightness,g_motor_ang_l, g_motor_ang_r, g_gyro);
-//		fputs(cBuff, bt); // エコーバック
+		if (sonar_alert() == 1) /* 障害物検知 */
+		{
+			forward = 0; /* 障害物を検知したら停止 */
+		}else{
+			x = runningcontroller->RunningExecute(now_section);
+		}
 
 	char cBuff[1024];
 	sprintf(cBuff, "Main+++,%f\n",  x);
