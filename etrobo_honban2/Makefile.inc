@@ -5,9 +5,9 @@ APPL_COBJS += balancer.o balancer_param.o
 APPL_CXXOBJS += \
 	DeviceValueGet.o \
 	MotorDrive.o \
-	SectionRunningData.o \
+	RunningData.o \
 	PIDCalculation.o \
-	SectionRunningDataGet.o \
+	RunningDataGet.o \
 	RunningCalculation.o \
 	RunningController.o \
 	SectionDecisionData.o \

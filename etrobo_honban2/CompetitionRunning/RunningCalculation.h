@@ -5,13 +5,13 @@
 #include "DeviceValueGet.h"
 #include "PIDCalculation.h"
 #include "balancer.h"
-#include "SectionRunningDataGet.h"
+#include "RunningDataGet.h"
 #include "MotorDrive.h"
 
 class RunningCalculation {
 public:
 
-	RunningCalculation(SectionRunningDataGet* SectionRunningDataGet,
+	RunningCalculation(RunningDataGet* RunningDataGet,
 			PIDCalculation* PIDCalculation);
 	DeviceValue RunningCalculate(DeviceValue dv,int now_section);
 
@@ -19,7 +19,7 @@ public:
 private:
 
 	PIDCalculation* mPIDCalculation;
-	SectionRunningDataGet* mSectionRunningDataGet;
+	RunningDataGet* mRunningDataGet;
 
 };
 

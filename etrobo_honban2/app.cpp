@@ -11,9 +11,9 @@
 #include "MotorDrive.h"
 #include "DeviceValueGet.h"
 
-#include "SectionRunningData.h"
+#include "RunningData.h"
 #include "PIDCalculation.h"
-#include "SectionRunningDataGet.h"
+#include "RunningDataGet.h"
 #include "RunningCalculation.h"
 #include "RunningController.h"
 
@@ -95,8 +95,9 @@ Clock gClock;
 static MotorDrive *gMotorDrive;
 static DeviceValueGet *gDeviceValueGet;
 static PIDCalculation *gPidcalculation;
-static SectionRunningData *gSectionrunningdata;
-static SectionRunningDataGet *gSectionrunningdataget;
+
+static RunningData *gRunningdata;
+static RunningDataGet *gRunningdataget;
 static RunningCalculation *gRunningcalculation;
 static RunningController *gRunningcontroller;
 
@@ -116,10 +117,10 @@ void main_task(intptr_t unused) {
 	gMotorDrive = new MotorDrive(gLeftMotor, gRightMotor, gTailMotor);
 	gDeviceValueGet = new DeviceValueGet(gTouchSensor, gSonarSensor, gColorSensor, gGyroSensor, gLeftMotor, gRightMotor, gTailMotor);
 
-	gSectionrunningdata = new SectionRunningData();
+	gRunningdata = new RunningData();
 	gPidcalculation = new PIDCalculation();
-	gSectionrunningdataget = new SectionRunningDataGet(gSectionrunningdata);
-	gRunningcalculation = new RunningCalculation(gSectionrunningdataget,gPidcalculation);
+	gRunningdataget = new RunningDataGet(gRunningdata);
+	gRunningcalculation = new RunningCalculation(gRunningdataget,gPidcalculation);
 	gRunningcontroller = new RunningController(gDeviceValueGet,gRunningcalculation,gMotorDrive);
 
 	gSectiondecisiondata = new SectionDecisionData();
