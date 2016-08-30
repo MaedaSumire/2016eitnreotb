@@ -2,6 +2,7 @@
 #define SECTIONRUNNINGDATA_H_
 
 #include "ev3api.h"
+#include "SectionRunningData.h"
 
 typedef struct{
 	double KP;
