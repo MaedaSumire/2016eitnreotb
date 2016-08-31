@@ -2,12 +2,14 @@
 #define EV3_APP_DEVICEVALUEGET_H_
 
 #include "ev3api.h"
+#include "TouchSensor.h"
 #include "SonarSensor.h"
 #include "ColorSensor.h"
 #include "GyroSensor.h"
 #include "Motor.h"
 
 typedef struct{
+	bool touch;
 	int16_t sonar;
 	int8_t color;
 	int16_t gyro;
@@ -18,19 +20,21 @@ typedef struct{
 	int32_t volt;
 	int8_t Lmotor_pwm = 0;
 	int8_t Rmotor_pwm = 0;
-} DV ;
+} DeviceValue ;
 
 class DeviceValueGet {
 public:
-	DeviceValueGet(ev3api::SonarSensor& sonarsensor,
-				   ev3api::ColorSensor& colorsensor,
-				   ev3api::GyroSensor& gyrosensor,
-				   ev3api::Motor& leftmotor,
-				   ev3api::Motor& rightmotor,
-				   ev3api::Motor& tailmotor);
-	DV DeviceValueGetter();
+	DeviceValueGet(ev3api::TouchSensor& touchSensor,
+				   ev3api::SonarSensor& sonarSensor,
+				   ev3api::ColorSensor& colorSensor,
+				   ev3api::GyroSensor& gyroSensor,
+				   ev3api::Motor& leftMotor,
+				   ev3api::Motor& rightMotor,
+				   ev3api::Motor& tailMotor);
+	DeviceValue DeviceValueGetter();
 
 private:
+		ev3api::TouchSensor& mTouchSensor;
 		ev3api::SonarSensor& mSonarSensor;
 		ev3api::ColorSensor& mColorSensor;
 		ev3api::GyroSensor& mGyroSensor;

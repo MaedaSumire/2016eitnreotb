@@ -1,37 +1,37 @@
-//デバイス値取得
 #include "DeviceValueGet.h"
 
 
-DeviceValueGet::DeviceValueGet(ev3api::SonarSensor& sonarsensor,
-							   ev3api::ColorSensor& colorsensor,
-							   ev3api::GyroSensor& gyrosensor,
-							   ev3api::Motor& leftmotor,
-							   ev3api::Motor& rightmotor,
-							   ev3api::Motor& tailmotor)
-		:mSonarSensor(sonarsensor),
-		 mColorSensor(colorsensor),
-		 mGyroSensor(gyrosensor),
-		 mLeftMotor(leftmotor),
-		 mRightMotor(rightmotor),
-		 mTailMotor(tailmotor){
+DeviceValueGet::DeviceValueGet(ev3api::TouchSensor& touchSensor,
+							   ev3api::SonarSensor& sonarSensor,
+							   ev3api::ColorSensor& colorSensor,
+							   ev3api::GyroSensor& gyroSensor,
+							   ev3api::Motor& leftMotor,
+							   ev3api::Motor& rightMotor,
+							   ev3api::Motor& tailMotor)
+		:mTouchSensor(touchSensor),
+		 mSonarSensor(sonarSensor),
+		 mColorSensor(colorSensor),
+		 mGyroSensor(gyroSensor),
+		 mLeftMotor(leftMotor),
+		 mRightMotor(rightMotor),
+		 mTailMotor(tailMotor){
 }
 
-//DV = DeviceValue
-//メソッド: DV デバイス値を取得する() return DV(構造体)
-DV DeviceValueGet::DeviceValueGetter(){
-	DV dv;
+DeviceValue DeviceValueGet::DeviceValueGetter(){
+	DeviceValue DV;
 
-	dv.sonar = mSonarSensor.getDistance();
-	dv.color = mColorSensor.getBrightness();
-	dv.gyro = mGyroSensor.getAnglerVelocity();
-	dv.Lmotor_angle = mLeftMotor.getCount();
-	dv.Rmotor_angle = mRightMotor.getCount();
-	dv.Tmotor = mTailMotor.getCount();
-	dv.GYRO_OFFSET = 0;
-	dv.volt = ev3_battery_voltage_mV();
-	dv.Lmotor_pwm;
-	dv.Rmotor_pwm;
+	DV.touch = mTouchSensor.isPressed();
+	DV.sonar = mSonarSensor.getDistance();
+	DV.color = mColorSensor.getBrightness();
+	DV.gyro = mGyroSensor.getAnglerVelocity();
+	DV.Lmotor_angle = mLeftMotor.getCount();
+	DV.Rmotor_angle = mRightMotor.getCount();
+	DV.Tmotor = mTailMotor.getCount();
+	DV.GYRO_OFFSET = 0;
+	DV.volt = ev3_battery_voltage_mV();
+	DV.Lmotor_pwm;
+	DV.Rmotor_pwm;
 
-	return dv;
+	return DV;
 
 }

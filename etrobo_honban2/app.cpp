@@ -10,11 +10,10 @@
 
 #include "MotorDrive.h"
 #include "DeviceValueGet.h"
-#include "UIGet.h"
 
-#include "RunningData.h"
+#include "SectionRunningData.h"
 #include "PIDCalculation.h"
-#include "RunningDataGet.h"
+#include "SectionRunningDataGet.h"
 #include "RunningCalculation.h"
 #include "RunningController.h"
 
@@ -24,12 +23,6 @@
 #include "SectionDecisionController.h"
 
 #include "CompetitionRunning.h"
-
-#include "ColorGet.h"
-#include "PostureAdjustment.h"
-#include "CalibrationController.h"
-#include "StartInstructionGet.h"
-#include "StartController.h"
 
 #include "ev3api.h"
 #include "app.h"
@@ -42,13 +35,15 @@
 #include "Clock.h"
 
 
+
+//using namespace ev3api;
+
 using ev3api::ColorSensor;
 using ev3api::SonarSensor;
 using ev3api::GyroSensor;
 using ev3api::TouchSensor;
 using ev3api::Motor;
 using ev3api::Clock;
-
 
 #define DEBUG
 
@@ -61,8 +56,7 @@ using ev3api::Clock;
 /* Bluetooth */
 static int32_t bt_cmd = 0; /* Bluetoothコマンド 1:リモートスタート */
 static FILE *bt = NULL; /* Bluetoothファイルハンドル */
-
-
+static double tail_angle_stand_up = 93;/* 完全停止時の角度[度] (2016/06/24_変更)*/
 
 /* 下記のマクロは個体/環境に合わせて変更する必要があります */
 #define GYRO_OFFSET           0  /* ジャイロセンサオフセット値(角速度0[deg/sec]時) */
@@ -71,6 +65,8 @@ static FILE *bt = NULL; /* Bluetoothファイルハンドル */
 #define SONAR_ALERT_DISTANCE 30  /* 超音波センサによる障害物検知距離[cm] */
 #define TAIL_ANGLE_STAND_UP  93  /* 完全停止時の角度[度] */
 #define TAIL_ANGLE_DRIVE      3  /* バランス走行時の角度[度] */
+#define P_GAIN             2.5F  /* 完全停止用モータ制御比例係数 */
+#define PWM_ABS_MAX          60  /* 完全停止用モータ制御PWM絶対最大値 */
 //#define DEVICE_NAME     "ET0"  /* Bluetooth名 hrp2/target/ev3.h BLUETOOTH_LOCAL_NAMEで設定 */
 //#define PASS_KEY        "1234" /* パスキー    hrp2/target/ev3.h BLUETOOTH_PIN_CODEで設定 */
 #define CMD_START         '1'    /* リモートスタートコマンド */
@@ -82,6 +78,7 @@ static FILE *bt = NULL; /* Bluetoothファイルハンドル */
 
 /* 関数プロトタイプ宣言 */
 static int32_t sonar_alert(void);
+static void tail_control(int32_t angle);
 
 // Device objects
 // オブジェクトを静的に確保する
@@ -97,11 +94,9 @@ Clock gClock;
 // オブジェクトの定義
 static MotorDrive *gMotorDrive;
 static DeviceValueGet *gDeviceValueGet;
-static UIGet *gUiGet;
-
 static PIDCalculation *gPidcalculation;
-static RunningData *gRunningdata;
-static RunningDataGet *gRunningdataget;
+static SectionRunningData *gSectionrunningdata;
+static SectionRunningDataGet *gSectionrunningdataget;
 static RunningCalculation *gRunningcalculation;
 static RunningController *gRunningcontroller;
 
@@ -112,32 +107,20 @@ static SectionDecisionController *gSectiondecisioncontroller;
 
 static CompetitionRunning *gCompetitionrunning;
 
-static ColorGet *gColorGet;
-static PostureAdjustment *gPostureAdjustment;
-static CalibrationController *gCalibrationController;
-static StartInstructionGet *gStartInstructionGet;
-static StartController *gStartController;
-
-
 //グローバル変数
 int32_t g_motor_ang_l, g_motor_ang_r, g_gyro, g_volt;
 uint8_t g_unAmbient, g_unBrightness;
 
-
-
 /* メインタスク */
 void main_task(intptr_t unused) {
-
-	/*オブジェクトの生成*/
 	gMotorDrive = new MotorDrive(gLeftMotor, gRightMotor, gTailMotor);
-	gDeviceValueGet = new DeviceValueGet(gSonarSensor, gColorSensor, gGyroSensor, gLeftMotor, gRightMotor, gTailMotor);
-	gUiGet = new UIGet(gTouchSensor);
+	gDeviceValueGet = new DeviceValueGet(gTouchSensor, gSonarSensor, gColorSensor, gGyroSensor, gLeftMotor, gRightMotor, gTailMotor);
 
-	gRunningdata = new RunningData();
+	gSectionrunningdata = new SectionRunningData();
 	gPidcalculation = new PIDCalculation();
-	gRunningdataget = new RunningDataGet(gRunningdata);
-	gRunningcalculation = new RunningCalculation(gPidcalculation, gRunningdataget);
-	gRunningcontroller = new RunningController(gDeviceValueGet, gRunningcalculation, gMotorDrive);
+	gSectionrunningdataget = new SectionRunningDataGet(gSectionrunningdata);
+	gRunningcalculation = new RunningCalculation(gSectionrunningdataget,gPidcalculation);
+	gRunningcontroller = new RunningController(gDeviceValueGet,gRunningcalculation,gMotorDrive);
 
 	gSectiondecisiondata = new SectionDecisionData();
 	gSectiondecisiondataget = new SectionDecisionDataGet(gSectiondecisiondata);
@@ -146,19 +129,11 @@ void main_task(intptr_t unused) {
 
 	gCompetitionrunning = new CompetitionRunning(gRunningcontroller, gSectiondecisioncontroller);
 
-	gColorGet = new ColorGet(gDeviceValueGet);
-	gPostureAdjustment = new PostureAdjustment(gDeviceValueGet, gMotorDrive, gUiGet);
-	gCalibrationController = new CalibrationController(gGyroSensor, gLeftMotor, gRightMotor, gTailMotor, gClock, gPostureAdjustment, gColorGet);
-	gStartInstructionGet = new StartInstructionGet();
-	gStartController = new StartController(gStartInstructionGet);
-
-
 	/* LCD画面表示 */
 	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
-	//ev3_lcd_draw_string("EV3way-ET sample_cpp", 0, CALIB_FONT_HEIGHT * 1);
+	ev3_lcd_draw_string("EV3way-ET sample_cpp", 0, CALIB_FONT_HEIGHT * 1);
 
-
-	/*キャリブレーション*/
+	/* 尻尾モーターのリセット */
 	gTailMotor.reset();
 
 	/* Open Bluetooth file */
@@ -174,33 +149,39 @@ void main_task(intptr_t unused) {
 //	sprintf(cBuff, "PID制御(turn)_P:0.4 I:1.0 D:0.0\n ,クロック,P制御turn,センサ値輝度,モータ\n");
 //	fputs(cBuff, bt); // エコーバック
 
-
-	ev3_lcd_draw_string("calibration", 0, 0);
-	gCalibrationController -> Calibrate();
-
 	/* スタート待機 */
 	while (1) {
+		tail_control(tail_angle_stand_up); /* 完全停止用角度に制御 */
 
-		ev3_lcd_draw_string("start_taiki", 0, 5);
-		//しっぽ調整機能
-		//gPostureAdjustment -> PostureAdjust();
+		//調整機能を導入
+		if (ev3_button_is_pressed(UP_BUTTON))/* 尻尾の角度調整 */
+		{
+			tail_angle_stand_up = tail_angle_stand_up + 0.1;
+		}
+
+		if (ev3_button_is_pressed(DOWN_BUTTON))/* 尻尾の角度調整 */
+		{
+			tail_angle_stand_up = tail_angle_stand_up - 0.1;
+		}
+		//ここまで
 
 		if (bt_cmd == 1) {
 			break; /* リモートスタート */
 		}
 
-		if (gUiGet->UIGetter().touch) {
+		if ((gDeviceValueGet->DeviceValueGetter()).touch) {
 			break; /* タッチセンサが押された */
 		}
-		//g_unBrightness  = gColorSensor.getBrightness();
+		g_unBrightness  = gColorSensor.getBrightness();
 
 		gClock.sleep(10);
-
 	}
 
-	/* 再度初期化 */
+	/* 走行モーターエンコーダーリセット */
 	gLeftMotor.reset();
 	gRightMotor.reset();
+
+	/* ジャイロセンサーリセット */
 	gGyroSensor.reset();
 	balance_init(); /* 倒立振子API初期化 */
 
@@ -216,14 +197,18 @@ void main_task(intptr_t unused) {
 		if (ev3_button_is_pressed(BACK_BUTTON))
 			break;
 
-		gMotorDrive->TailMotorDrive(TAIL_ANGLE_DRIVE); /*a バランス走行用角度に制御 */
+		tail_control(TAIL_ANGLE_DRIVE); /*a バランス走行用角度に制御 */
 
-		//g_unBrightness  = gColorSensor.getBrightness();
+
+		g_unBrightness  = gColorSensor.getBrightness();
 		//nBri = 26;
+
+
 //		if (sonar_alert() == 1) /* 障害物検知 */
 //		{
 //			forward = turn = 0; /* 障害物を検知したら停止 */
 //		}
+
 
 		gCompetitionrunning-> CompetitionRun();
 
@@ -234,17 +219,15 @@ void main_task(intptr_t unused) {
 
 
 
-
 		gClock.sleep(3); /* 4msec周期起動 */
 	}
-
-	/*終了処理*/
 	gLeftMotor.reset();
 	gRightMotor.reset();
+
 	ter_tsk(BT_TASK);
 	fclose(bt);
-	ext_tsk();
 
+	ext_tsk();
 }
 
 //*****************************************************************************
@@ -284,6 +267,17 @@ static int32_t sonar_alert(void) {
 // 返り値 : 無し
 // 概要 : 走行体完全停止用モータの角度制御
 //*****************************************************************************
+static void tail_control(int32_t angle) {
+	float pwm = (float) (angle - gTailMotor.getCount()) * P_GAIN; /* 比例制御 */
+	/* PWM出力飽和処理 */
+	if (pwm > PWM_ABS_MAX) {
+		pwm = PWM_ABS_MAX;
+	} else if (pwm < -PWM_ABS_MAX) {
+		pwm = -PWM_ABS_MAX;
+	}
+
+	gTailMotor.setPWM(pwm);
+}
 
 //*****************************************************************************
 // 関数名 : bt_task

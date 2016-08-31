@@ -8,8 +8,8 @@
 class CompetitionRunning {
 public:
 
-	CompetitionRunning(RunningController* runningcontroller,
-			SectionDecisionController* sectiondecisioncontroller);
+	CompetitionRunning(RunningController* RunningController,
+			SectionDecisionController* SectionDecisionController);
 	void CompetitionRun();
 private:
 

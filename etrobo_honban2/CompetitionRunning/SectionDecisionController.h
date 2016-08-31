@@ -8,8 +8,8 @@
 class SectionDecisionController {
 public:
 
-	SectionDecisionController(SectionDecision* sectiondecision,
-			DeviceValueGet* devicevalueget);
+	SectionDecisionController(SectionDecision* SectionDecision,
+			DeviceValueGet* DeviceValueGet);
 	int SectionIdentify(int now_section);
 
 private:

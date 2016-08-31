@@ -9,8 +9,8 @@
 class SectionDecision {
 public:
 
-	SectionDecision(SectionDecisionDataGet* sectiondecisiondataget);
-	bool SwitchingDecision(DV dv,int now_section);
+	SectionDecision(SectionDecisionDataGet* SectionDecisionDataGet);
+	bool SwitchingDecision(DeviceValue dv,int now_section);
 
 private:
 
