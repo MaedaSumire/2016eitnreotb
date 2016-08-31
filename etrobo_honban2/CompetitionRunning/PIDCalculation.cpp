@@ -29,7 +29,7 @@ void PIDCalculation::Calibrate(int8_t DBBlack, int8_t DBWhite, int8_t DBGray){
 //SRD = SectionRunningData
 //PID計算後、turn値を返却
 //メソッド: PID演算結果値(turn値) PID演算する(区間走行データ、デバイス値)
-double PIDCalculation::PIDCalculate(SRD srd,int8_t DeviceBrightness){
+double PIDCalculation::PIDCalculate(RD rd,int8_t DeviceBrightness){
 
 
 	//PID
@@ -37,9 +37,9 @@ double PIDCalculation::PIDCalculate(SRD srd,int8_t DeviceBrightness){
 	diff2 = nBri - DeviceBrightness;
 	integral += (diff2 + diff1) / 2.0 * DELTA_T;
 
-	p = srd.KP * diff2;
-	i = srd.KI * integral;
-	d = srd.KD * (diff2 - diff1) / DELTA_T;
+	p = rd.KP * diff2;
+	i = rd.KI * integral;
+	d = rd.KD * (diff2 - diff1) / DELTA_T;
 
 	turn = p + i + d;
 
@@ -49,6 +49,6 @@ double PIDCalculation::PIDCalculate(SRD srd,int8_t DeviceBrightness){
 		turn = 100.0;
 	}
 
-	return 0;
+	return turn;
 
 }

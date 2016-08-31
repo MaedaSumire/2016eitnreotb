@@ -8,13 +8,13 @@
 class MotorDrive {
 public:
 	
-	MotorDrive(ev3api::Motor& leftMotor,
-			   ev3api::Motor& rightMotor,
-			   ev3api::Motor& tailMotor);
+	MotorDrive(ev3api::Motor& leftmotor,
+			   ev3api::Motor& rightmotor,
+			   ev3api::Motor& tailmotor);
 	
 	void LRMotorDrive(	int8_t leftPWM,
 						int8_t rightPWM);
-	void TailMotorDrive(int8_t tailPWM);
+	void TailMotorDrive(float angle);
 	
 private:
 	ev3api::Motor& mLeftMotor;
