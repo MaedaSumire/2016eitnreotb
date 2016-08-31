@@ -2,20 +2,18 @@
 #include "DeviceValueGet.h"
 
 
-DeviceValueGet::DeviceValueGet(ev3api::TouchSensor& touchSensor,
-							   ev3api::SonarSensor& sonarSensor,
-							   ev3api::ColorSensor& colorSensor,
-							   ev3api::GyroSensor& gyroSensor,
-							   ev3api::Motor& leftMotor,
-							   ev3api::Motor& rightMotor,
-							   ev3api::Motor& tailMotor)
-		:mTouchSensor(touchSensor),
-		 mSonarSensor(sonarSensor),
-		 mColorSensor(colorSensor),
-		 mGyroSensor(gyroSensor),
-		 mLeftMotor(leftMotor),
-		 mRightMotor(rightMotor),
-		 mTailMotor(tailMotor){
+DeviceValueGet::DeviceValueGet(ev3api::SonarSensor& sonarsensor,
+							   ev3api::ColorSensor& colorsensor,
+							   ev3api::GyroSensor& gyrosensor,
+							   ev3api::Motor& leftmotor,
+							   ev3api::Motor& rightmotor,
+							   ev3api::Motor& tailmotor)
+		:mSonarSensor(sonarsensor),
+		 mColorSensor(colorsensor),
+		 mGyroSensor(gyrosensor),
+		 mLeftMotor(leftmotor),
+		 mRightMotor(rightmotor),
+		 mTailMotor(tailmotor){
 }
 
 //DV = DeviceValue
@@ -23,7 +21,6 @@ DeviceValueGet::DeviceValueGet(ev3api::TouchSensor& touchSensor,
 DV DeviceValueGet::DeviceValueGetter(){
 	DV dv;
 
-	dv.touch = mTouchSensor.isPressed();
 	dv.sonar = mSonarSensor.getDistance();
 	dv.color = mColorSensor.getBrightness();
 	dv.gyro = mGyroSensor.getAnglerVelocity();

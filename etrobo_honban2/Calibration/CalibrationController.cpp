@@ -5,12 +5,14 @@ CalibrationController::CalibrationController(ev3api::GyroSensor& gyrosensor,
 											ev3api::Motor& leftmotor,
 											ev3api::Motor& rightmotor,
 											ev3api::Motor& tailmotor,
+											ev3api::Clock& clock,
 											PostureAdjustment* postureadjustment,
 											ColorGet* colorget)
 	:mGyroSensor(gyrosensor),
 	 mLeftMotor(leftmotor),
 	 mRightMotor(rightmotor),
 	 mTailMotor(tailmotor),
+	 mClock(clock),
 	 mPostureAdjustment(postureadjustment),
 	 mColorGet(colorget){
 }
@@ -25,15 +27,16 @@ void CalibrationController::Calibrate(){
 
 	//終了条件に達するまで姿勢調節・輝度取得を実施
 	while(1){
+		ev3_lcd_draw_string("calibration_while", 0, 10);
+		mPostureAdjustment -> PostureAdjust();
 
-		//走行体ボタン上下・左右で姿勢調節・輝度取得を切り替える
-		if(true){//姿勢調節　走行体上下ボタンで姿勢調整、真ん中ボタンでこのwhileに戻る
-			mPostureAdjustment -> PostureAdjust();
-		}
-		else if(false){//輝度取得　走行体左右ボタンで輝度取得、真ん中ボタンでこのwhileに戻る
-			cc = mColorGet -> ColorGetter();
-		}
+		//cc = mColorGet -> ColorGetter();
+
+		mClock.sleep(10);
 	}
+	ev3_lcd_draw_string("calibration_end", 0, 4);
+
+
 }
 
 //メソッド: void センサ・モータを初期化する()

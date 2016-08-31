@@ -13,24 +13,16 @@ CC ColorGet::ColorGetter(){
 	CC cc;
 	DV dv;
 
-	//真ん中ボタンが押されたら抜ける
-	while(1){
-
-		/*カラー取得*/
-		if(true){//bluetoothでキー入力があったら
-			dv = mDeviceValueGet -> DeviceValueGetter();
-			cc.white = dv.color;
-		}
-		else if(false){//bluetoothでキー入力があったら
-			dv = mDeviceValueGet -> DeviceValueGetter();
-			cc.black = dv.color;
-		}
-
-		if(true){//真ん中ボタンが押されたら抜ける
-			break;
-		}
-
+	/*カラー取得*/
+	if(false){//bluetoothでキー入力があったら
+		dv = mDeviceValueGet -> DeviceValueGetter();
+		cc.white = dv.color;
 	}
+	else if(false){//bluetoothでキー入力があったら
+		dv = mDeviceValueGet -> DeviceValueGetter();
+		cc.black = dv.color;
+	}
+
 
 	return cc;
 }
