@@ -18,27 +18,43 @@ bool SectionDecision::SwitchingDecision(DV dv, int now_section) {
 
 	/*計算とか比較とか*/
 	switch (now_section) {
-	// 区間1
+	// 区間1(スタート区間)
 	case 0:
-		if (dv.Lmotor_angle > sdd.Distance) {
-			result = true;
-		}
+		result = true;
 		break;
 	// 区間2
 	case 1:
-		if ((dv.Lmotor_angle - dv.Rmotor_angle) < sdd.TurningAmount) {
+		if (dv.Lmotor_angle > sdd.Distance) {
 			result = true;
 		}
 		break;
 	// 区間3
 	case 2:
-		if (dv.Lmotor_angle > sdd.Distance) {
+		if ((dv.Lmotor_angle - dv.Rmotor_angle) < sdd.TurningAmount) {
 			result = true;
 		}
 		break;
 	// 区間4
 	case 3:
-		if ((dv.Lmotor_angle - dv.Rmotor_angle) < sdd.TurningAmount) {
+		if (dv.Lmotor_angle > sdd.Distance) {
+			result = true;
+		}
+		break;
+	// 区間5
+	case 4:
+		if (dv.Lmotor_angle > sdd.Distance) {
+			result = true;
+		}
+		break;
+	// 区間6
+	case 5:
+		if (dv.Lmotor_angle > sdd.Distance) {
+			result = true;
+		}
+		break;
+	// 区間7
+	case 6:
+		if ((dv.Lmotor_angle - dv.Rmotor_angle) > sdd.TurningAmount) {
 			result = true;
 		}
 		break;

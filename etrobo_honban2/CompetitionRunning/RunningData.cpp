@@ -10,6 +10,9 @@ RD RunningData::referData(int now_section){
 
 	RD rd;
 
+	// スタート用
+	double mforwardStrat = 10;
+
 	// 直線用
 	double mforwardStr = 70;
 	double mKPStr =0.2;
@@ -18,10 +21,10 @@ RD RunningData::referData(int now_section){
 	double mforwardCur = 30;
 
 
-	double mKP[7] = {mKPStr,1.4,mKPStr,1.4,1.4,1.4,1.4};
-	double mKI[7] = {0.1,0.2,0.1,0.2,0.2,0.2,0.2};
-	double mKD[7] = {0.02,0.02,0.02,0.02,0.02,0.02,0.02};
-	float mforward[7] = {mforwardStr,mforwardCur,mforwardStr,mforwardCur,mforwardCur,mforwardCur,mforwardCur};
+	double mKP[7] = {0,	mKPStr,	1.4,	mKPStr,	1.4,	mKPStr,	1.4};
+	double mKI[7] = {0,	0.1,	0.2,	0.1,	0.2,	0.1,	0.2};
+	double mKD[7] = {0,	0.02,	0.02,	0.02,	0.02,	0.02,	0.02};
+	float mforward[7] = {mforwardStrat,mforwardStr,mforwardCur,mforwardStr,mforwardCur,50,mforwardCur};
 
 	rd.KP = mKP[now_section];
 	rd.KI = mKI[now_section];
