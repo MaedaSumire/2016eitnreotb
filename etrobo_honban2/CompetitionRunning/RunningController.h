@@ -9,9 +9,9 @@
 class RunningController {
 public:
 
-	RunningController(DeviceValueGet* DeviceValueGet,
-					RunningCalculation* RunningCalculation,
-					MotorDrive* MotorDrive);
+	RunningController(DeviceValueGet* devicevalueget,
+					RunningCalculation* runningcalculation,
+					MotorDrive* motordrive);
 	void RunningExecute(int now_section);
 
 
