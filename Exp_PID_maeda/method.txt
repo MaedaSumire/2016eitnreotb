@@ -1,0 +1,35 @@
+SDD SectionDecisionDataGet(int now_section)
+説明：区間判断のゲッター。現段階では区間判断データもこの関数内に格納してあります。
+
+●使い方●
+
+main入る前に以下を宣言してください：
+
+	/* 構造体の宣言 */
+	typedef struct{			//おまじない
+		int brightness;		//判断に利用する変数
+		int turningValue;	//判断に利用する変数
+	} SDD ;					//構造体の名前
+
+	/* 関数プロトタイプ宣言 */
+	SDD SectionDecisionDataGet(int now_section);  //構造体の宣言後に記述。
+
+実際の関数：
+
+SDD SectionDecisionDataGet(int now_section){
+
+	int Data_brightness[8] = {0,1,2,3,4,5,6,7};		//判断に利用する変数の実値。
+	int Data_turningValue[8] = {0,1,2,3,4,5,6,7};	//同上。
+	SDD nowSDD;		//返却用構造体の作成
+	
+	
+	nowSDD.brightness = Data_brightness[now_num];		//構造体のメンバを指定し、現区間の判断データを入れます
+	nowSDD.turningValue = Data_turningValue[now_num];	//上とは別のメンバを指定し、～～。
+
+	return nowSDD;
+};  //なぜかセミコロンで終わらないとエラーになります。原因は不明。
+
+
+関数を呼び出すときの記述：
+	SDD nowSDD2;	//受け皿となる変数の生成。
+	nowSDD2 = SectionDecisionDataGet(now_section);	//呼び出し文。上と一緒にしても良いかもしれない。
