@@ -29,6 +29,11 @@ void CompetitionRunning::CompetitionRun(){
 		//区間判断コントローラに現区間の番号をもらう
 		mnow_section = mSectionDecisionController -> SectionIdentify(mnow_section);
 
+		// 区間
+		if(mnow_section == 7){
+			break;
+		}
+
 		//走行コントローラに投げる
 		mRunningController -> RunningExecute(mnow_section);
 
