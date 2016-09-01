@@ -7,7 +7,7 @@
 class SectionDecisionDataGet {
 public:
 
-	SectionDecisionDataGet(SectionDecisionData* SectionDecisionData);
+	SectionDecisionDataGet(SectionDecisionData* sectiondecisiondata);
 	SDD SectionDecisionDataGetter(int now_section);
 
 
