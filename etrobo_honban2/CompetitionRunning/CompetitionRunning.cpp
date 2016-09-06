@@ -11,7 +11,7 @@ CompetitionRunning::CompetitionRunning(RunningController* runningcontroller,
 	 mMotorDrive(motordrive),
 	 mUIGet(uiget),
 	 mClock(clock),
-	 mnow_section(0){
+	 mNowSection(0){
 }
 
 //メソッド：void 競技走行する（）
@@ -19,7 +19,7 @@ void CompetitionRunning::CompetitionRun(){
 
 	float TAIL_ANGLE_DRIVE = 3;
 
-	while (mnow_section < 7) {
+	while (mNowSection < 7) {
 
 		ev3_lcd_draw_string("running_start", 0, 60);
 
@@ -27,15 +27,10 @@ void CompetitionRunning::CompetitionRun(){
 		mMotorDrive->TailMotorDrive(TAIL_ANGLE_DRIVE);
 
 		//区間判断コントローラに現区間の番号をもらう
-		mnow_section = mSectionDecisionController -> SectionIdentify(mnow_section);
-
-		// 区間
-		if(mnow_section == 7){
-			break;
-		}
+		mNowSection = mSectionDecisionController -> SectionIdentify(mNowSection);
 
 		//走行コントローラに投げる
-		mRunningController -> RunningExecute(mnow_section);
+		mRunningController -> RunningExecute(mNowSection);
 
 		if (mUIGet->UIGetter().Button == 'B')
 			break;

@@ -29,8 +29,8 @@ DV DeviceValueGet::DeviceValueGetter(){
 	dv.Tmotor = mTailMotor.getCount();
 	dv.GYRO_OFFSET = 0;
 	dv.volt = ev3_battery_voltage_mV();
-	dv.Lmotor_pwm;
-	dv.Rmotor_pwm;
+	dv.Lmotor_pwm = 0;
+	dv.Rmotor_pwm = 0;
 
 	return dv;
 

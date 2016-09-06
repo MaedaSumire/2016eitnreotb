@@ -25,10 +25,10 @@
 
 #include "CompetitionRunning.h"
 
-#include "ColorGet.h"
-#include "PostureAdjustment.h"
+//#include "ColorGet.h"
+//#include "PostureAdjustment.h"
 #include "CalibrationController.h"
-#include "StartInstructionGet.h"
+//#include "StartInstructionGet.h"
 #include "StartController.h"
 
 #include "ev3api.h"
@@ -59,8 +59,13 @@ using ev3api::Clock;
 
 
 /* Bluetooth */
-static int32_t bt_cmd = 0; /* Bluetoothコマンド 1:リモートスタート */
-static FILE *bt = NULL; /* Bluetoothファイルハンドル */
+//static int32_t bt_cmd = 0; /* Bluetoothコマンド 1:リモートスタート */
+//static FILE *pbt_File = NULL; /* Bluetoothファイルハンドル */
+
+//int32_t bt_cmd = 0; /* Bluetoothコマンド 1:リモートスタート */
+//FILE *pbt_File = NULL; /* Bluetoothファイルハンドル */
+
+BLUET*	gpBlueT;
 
 
 /* 下記のマクロは個体/環境に合わせて変更する必要があります */
@@ -105,10 +110,10 @@ static SectionDecisionController *gSectiondecisioncontroller;
 
 static CompetitionRunning *gCompetitionrunning;
 
-static ColorGet *gColorGet;
-static PostureAdjustment *gPostureAdjustment;
+//static ColorGet *gColorGet;
+//static PostureAdjustment *gPostureAdjustment;
 static CalibrationController *gCalibrationController;
-static StartInstructionGet *gStartInstructionGet;
+//static StartInstructionGet *gStartInstructionGet;
 static StartController *gStartController;
 
 
@@ -119,12 +124,16 @@ void main_task(intptr_t unused) {
 	gMotorDrive = new MotorDrive(gLeftMotor, gRightMotor, gTailMotor);
 	gDeviceValueGet = new DeviceValueGet(gSonarSensor, gColorSensor, gGyroSensor, gLeftMotor, gRightMotor, gTailMotor);
 	gUiGet = new UIGet(gTouchSensor);
+//	gUiGet->SetBtCmd(&bt_cmd);
+//	gUiGet->SetBtFile(pbt_File);
+	gpBlueT	= gUiGet->GetBlueT();	// ブルーツース構造体の取得
 
 	gRunningdata = new RunningData();
 	gPidcalculation = new PIDCalculation();
 	gRunningdataget = new RunningDataGet(gRunningdata);
 	gRunningcalculation = new RunningCalculation(gPidcalculation, gRunningdataget);
-	gRunningcontroller = new RunningController(gDeviceValueGet, gRunningcalculation, gMotorDrive);
+//	gRunningcontroller = new RunningController(gDeviceValueGet, gRunningcalculation, gMotorDrive);
+	gRunningcontroller = new RunningController(gDeviceValueGet, gRunningcalculation, gMotorDrive, gUiGet, gClock);
 
 	gSectiondecisiondata = new SectionDecisionData();
 	gSectiondecisiondataget = new SectionDecisionDataGet(gSectiondecisiondata);
@@ -133,25 +142,30 @@ void main_task(intptr_t unused) {
 
 	gCompetitionrunning = new CompetitionRunning(gRunningcontroller, gSectiondecisioncontroller, gMotorDrive, gUiGet, gClock);
 
-	gColorGet = new ColorGet(gDeviceValueGet);
-	gPostureAdjustment = new PostureAdjustment(gDeviceValueGet, gMotorDrive, gUiGet);
-	gCalibrationController = new CalibrationController(gGyroSensor, gLeftMotor, gRightMotor, gTailMotor, gClock, gPostureAdjustment, gColorGet, gUiGet);
-	gStartInstructionGet = new StartInstructionGet(gUiGet);
-	gStartController = new StartController(gStartInstructionGet,gPostureAdjustment,gClock);
+//	gColorGet = new ColorGet(gDeviceValueGet);
+//	gPostureAdjustment = new PostureAdjustment(gDeviceValueGet, gMotorDrive, gUiGet);
+//	gCalibrationController = new CalibrationController(gGyroSensor, gLeftMotor, gRightMotor, gTailMotor, gClock, gPostureAdjustment, gColorGet, gUiGet);
+	gCalibrationController = new CalibrationController(gGyroSensor, gClock, gMotorDrive, gDeviceValueGet, gUiGet);
 
+//	gStartInstructionGet = new StartInstructionGet(gUiGet);
+//	gStartController = new StartController(gStartInstructionGet,gPostureAdjustment,gClock);
+	gStartController = new StartController(gCalibrationController, gMotorDrive, gUiGet, gClock);
 
 	/* LCD画面表示 */
 	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
 
 	/* Open Bluetooth file */
-	bt = ev3_serial_open_file(EV3_SERIAL_BT);
-	assert(bt != NULL);
+	//pbt_File = ev3_serial_open_file(EV3_SERIAL_BT);
+	//assert(pbt_File != NULL);
+
+	gpBlueT->pBtFile	= ev3_serial_open_file(EV3_SERIAL_BT);
+	assert(gpBlueT->pBtFile != NULL);
 
 	/* Bluetooth通信タスクの起動 */
 	act_tsk (BT_TASK);
 
 	/*キャリブレーション*/
-	gCalibrationController -> Calibrate();
+	gCalibrationController->Calibrate();
 
 	/* スタート待機 */
 	gStartController->StartDicision();
@@ -166,7 +180,7 @@ void main_task(intptr_t unused) {
 	 * Main loop for the self-balance control algorithm
 	 */
 	
-	uint32_t unStartTime	= gClock.now();
+//	uint32_t unStartTime	= gClock.now();
 	
 	/*競技走行*/
 	gCompetitionrunning-> CompetitionRun();
@@ -180,7 +194,10 @@ void main_task(intptr_t unused) {
 	gLeftMotor.reset();
 	gRightMotor.reset();
 	ter_tsk(BT_TASK);
-	fclose(bt);
+
+	//fclose(pbt_File);
+	fclose(gpBlueT->pBtFile);
+
 	ext_tsk();
 
 }
@@ -195,14 +212,24 @@ void main_task(intptr_t unused) {
 void bt_task(intptr_t unused) {
 
 	while (1) {
-		uint8_t c = fgetc(bt); /* 受信 */
-		switch (c) {
-		case '1':
-			bt_cmd = 1;
-			break;
-		default:
-			break;
+//		uint8_t c = fgetc(pbt_File); /* 受信 */
+		uint8_t c = fgetc(gpBlueT->pBtFile);	// 受信
+
+		//switch (c) {
+		//case '1':
+		//	bt_cmd = 1;
+		//	break;
+		//default:
+		//	break;
+		//}
+
+		if( c >= '0' ){
+			// キーボード押下
+			//bt_cmd	= c;
+			gpBlueT->btcKey	= c;
+			fputc(gpBlueT->btcKey, gpBlueT->pBtFile); /* エコーバック */
 		}
-		fputc(c, bt); /* エコーバック */
+
+		fputc(c, gpBlueT->pBtFile); /* エコーバック */
 	}
 }
