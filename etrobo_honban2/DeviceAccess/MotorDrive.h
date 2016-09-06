@@ -16,6 +16,8 @@ public:
 						int8_t rightPWM);
 	void TailMotorDrive(float angle);
 	
+	void reset();
+
 private:
 	ev3api::Motor& mLeftMotor;
 	ev3api::Motor& mRightMotor;

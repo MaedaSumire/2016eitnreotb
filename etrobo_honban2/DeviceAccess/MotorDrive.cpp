@@ -34,3 +34,11 @@ void MotorDrive::TailMotorDrive(float angle){
 	mTailMotor.setPWM(pwm);
 
 }
+
+// リセット
+void MotorDrive::reset()
+{
+	mLeftMotor.reset();
+	mRightMotor.reset();
+	mTailMotor.reset();
+}
