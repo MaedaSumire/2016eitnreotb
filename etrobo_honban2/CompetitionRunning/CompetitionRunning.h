@@ -23,7 +23,8 @@ private:
 	MotorDrive* mMotorDrive;
 	UIGet* mUIGet;
 	ev3api::Clock& mClock;
-	int mnow_section;
+
+	int mNowSection;	// 現在の区間番号
 
 };
 

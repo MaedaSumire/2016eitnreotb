@@ -10,12 +10,15 @@ PostureAdjustment::PostureAdjustment(DeviceValueGet* devicevalueget,
 	 TAIL_ANGLE_STAND_UP(93){
 }
 
-//メソッド： void しっぽモータの角度を調節する（）
-void PostureAdjustment::PostureAdjust(){
 
+
+//メソッド： void しっぽモータの角度を調節する（）
+//void PostureAdjustment::PostureAdjust(){
+void PostureAdjustment::PostureAdjust( UI ui ){
 	char c;
 
-	c = mUIGet -> UIGetter().Button;
+	//c = mUIGet -> UIGetter().Button;
+	c	= ui.Button;
 	/*しっぽ角度調整*/
 	if ( c == 'U' ){
 		TAIL_ANGLE_STAND_UP = TAIL_ANGLE_STAND_UP + 0.1;

@@ -11,7 +11,8 @@ public:
 
 	PostureAdjustment(DeviceValueGet* devicevalueget, MotorDrive* motordrive,
 						UIGet* uiget);
-	void PostureAdjust();
+	//void PostureAdjust();
+	void PostureAdjust( UI ui);
 
 private:
 	DeviceValueGet* mDeviceValueGet;
