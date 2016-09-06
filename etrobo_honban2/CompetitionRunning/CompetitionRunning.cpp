@@ -11,7 +11,7 @@ CompetitionRunning::CompetitionRunning(RunningController* runningcontroller,
 	 mMotorDrive(motordrive),
 	 mUIGet(uiget),
 	 mClock(clock),
-	 mnow_section(0){
+	 mnow_section(6){
 }
 
 //メソッド：void 競技走行する（）
@@ -39,7 +39,7 @@ void CompetitionRunning::CompetitionRun(){
 
 	}
 
-	ev3_lcd_draw_string("running_end", 0, 60);
+	ev3_lcd_draw_string("running_end", 0, 70);
 
 
 

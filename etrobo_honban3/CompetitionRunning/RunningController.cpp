@@ -27,7 +27,7 @@ void RunningController::RunningExecute(int now_section){
 	dv = mRunningCalculation->RunningCalculate(dv,now_section);
 
 	//モーターに指示を出す
-	//mMotorDrive->LRMotorDrive(dv.Lmotor_pwm,dv.Rmotor_pwm);
+	mMotorDrive->LRMotorDrive(dv.Lmotor_pwm,dv.Rmotor_pwm);
 
 	//ログ出力
 	char*	cLogBuff	= mUIGet->GetBlueT()->pcLogBuff;

@@ -20,7 +20,8 @@ APPL_CXXOBJS += \
 	PostureAdjustment.o \
 	CalibrationController.o \
 	StartInstructionGet.o \
-	StartController.o
+	StartController.o \
+	ExtraStage.o
 
 
 SRCLANG := c++
@@ -32,11 +33,12 @@ include $(EV3RT_SDK_LIB_DIR)/libcpp-ev3/Makefile
 
 endif
 
-APPL_DIR += $(mkfile_path)CompetitionRunning $(mkfile_path)DeviceAccess $(mkfile_path)Calibration
+APPL_DIR += $(mkfile_path)CompetitionRunning $(mkfile_path)DeviceAccess $(mkfile_path)Calibration $(mkfile_path)ExtraStage
 
 INCLUDES += \
 	-I$(mkfile_path)CompetitionRunning \
 	-I$(mkfile_path)DeviceAccess \
-	-I$(mkfile_path)Calibration
+	-I$(mkfile_path)Calibration \
+	-I$(mkfile_path)ExtraStage
 
 COPTS += -fno-use-cxa-atexit

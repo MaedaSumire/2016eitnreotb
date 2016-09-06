@@ -34,8 +34,8 @@ static FILE *bt = NULL; /* Bluetoothファイルハンドル */
 
 /* 下記のマクロは個体/環境に合わせて変更する必要があります */
 #define GYRO_OFFSET           0  /* ジャイロセンサオフセット値(角速度0[deg/sec]時) */
-#define LIGHT_WHITE          40  /* 白色の光センサ値 */
-#define LIGHT_BLACK           0  /* 黒色の光センサ値 */
+#define LIGHT_WHITE          42  /* 白色の光センサ値 */
+#define LIGHT_BLACK           2  /* 黒色の光センサ値 */
 #define SONAR_ALERT_DISTANCE 30  /* 超音波センサによる障害物検知距離[cm] */
 #define TAIL_ANGLE_STAND_UP  93  /* 完全停止時の角度[度] */
 #define TAIL_ANGLE_DRIVE      3  /* バランス走行時の角度[度] */
@@ -68,14 +68,6 @@ int32_t nBri;
 static int32_t sonar_alert(void);
 static void tail_control(int32_t angle);
 
-
-typedef struct{
-	int brightness;
-	int turningValue;
-} SDD ;
-SDD SectionDecisionDataGet(int now_section);
-
-
 /* オブジェクトへのポインタ定義 */
 TouchSensor* touchSensor;
 SonarSensor* sonarSensor;
@@ -105,8 +97,6 @@ void main_task(intptr_t unused) {
 	rightMotor = new Motor(PORT_B);
 	tailMotor = new Motor(PORT_A);
 	clock = new Clock();
-	
-	SDD nowSDD2;
 
 	/* LCD画面表示 */
 	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
@@ -121,9 +111,9 @@ void main_task(intptr_t unused) {
 
 	/* Bluetooth通信タスクの起動 */
 	act_tsk (BT_TASK);
-	
+
 	ev3_led_set_color(LED_ORANGE); /* 初期化完了通知 */
-	
+
 	char cBuff[1024];
 	sprintf(cBuff, "PID制御(turn)_P:0.4 I:1.0 D:0.0\n ,クロック,P制御turn,センサ値輝度,モータ\n");
 	fputs(cBuff, bt); // エコーバック
@@ -169,9 +159,9 @@ void main_task(intptr_t unused) {
 	/**
 	 * Main loop for the self-balance control algorithm
 	 */
-	
+
 	uint32_t unStartTime	= clock->now();
-	
+
 	while (1) {
 		if (ev3_button_is_pressed(BACK_BUTTON))
 			break;
@@ -182,35 +172,38 @@ void main_task(intptr_t unused) {
 		{
 			forward = turn = 0; /* 障害物を検知したら停止 */
 		} else {
-			forward = 40; /* 前進命令 */
+			forward = 30; /* 前進命令 */
 			g_unBrightness  = colorSensor->getBrightness();
-			nBri = 26;
-			
+			nBri = ((LIGHT_WHITE - LIGHT_BLACK)/ 2)*1.1;
+
+			if(g_unBrightness > LIGHT_WHITE * 1.1){
+				g_unBrightness = LIGHT_WHITE * 1.1;
+			}else if(g_unBrightness  < LIGHT_BLACK){
+				g_unBrightness = LIGHT_BLACK;
+			}
+
 			if( clock->now() - unStartTime > 1000){
-				
-				
-				
+
+
+
         		//PID
         		diff[0] = diff[1];
         		diff[1] = nBri - g_unBrightness;
         		integral += (diff[1] + diff[0]) / 2.0 * DELTA_T;
-				
+
 				p = KP * diff[1];
 				i = KI * integral;
 				d = KD * (diff[1] - diff[0]) / DELTA_T;
-				
+
         		turn = p+ i + d;
-			
+
 				if(turn < -100 ){
 					turn = -100;
 				}else if (turn > 100){
 					turn = 100;
 				}
-				
-				nowSDD2 = SectionDecisionDataGet(1);
-				
 			}
-			
+
 		}
 
 		/* 倒立振子制御API に渡すパラメータを取得する */
@@ -226,17 +219,12 @@ void main_task(intptr_t unused) {
 				(float) g_motor_ang_r, (float) g_volt, (int8_t *) &pwm_L,
 				(int8_t *) &pwm_R);
 
-		//leftMotor->setPWM(pwm_L);
-		//rightMotor->setPWM(pwm_R);
+		leftMotor->setPWM(pwm_L);
+		rightMotor->setPWM(pwm_R);
 
 		// ログ
-//		char cBuff[1024];
-//		sprintf(cBuff, "Main,%d,%d,%d,%d, %d, %d\n", clock->now(), turn,g_unBrightness,g_motor_ang_l, g_motor_ang_r, g_gyro);
-//		fputs(cBuff, bt); // エコーバック
-
-
 		char cBuff[1024];
-		sprintf(cBuff, "Main,%d,%d\n", pwm_L, pwm_R);
+		sprintf(cBuff, "Main,%d,%d,%d,%d, %d, %d\n", clock->now(), turn,g_unBrightness,g_motor_ang_l, g_motor_ang_r, g_gyro);
 		fputs(cBuff, bt); // エコーバック
 
 		clock->sleep(3); /* 4msec周期起動 */
@@ -320,22 +308,3 @@ void bt_task(intptr_t unused) {
 		fputc(c, bt); /* エコーバック */
 	}
 }
-
-
-//****************************************
-//区間データ群を返却する関数
-//
-//使い方はmethod.txtを参照。
-//****************************************
-SDD SectionDecisionDataGet(int now_section){
-
-	int Data_brightness[8] = {0,1,2,3,4,5,6,7};
-	int Data_turningValue[8] = {0,1,2,3,4,5,6,7};
-	SDD nowSDD;
-	
-	
-	nowSDD.brightness = Data_brightness[now_section];
-	nowSDD.turningValue = Data_turningValue[now_section];
-
-	return nowSDD;
-};

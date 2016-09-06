@@ -41,6 +41,7 @@
 #include "Motor.h"
 #include "Clock.h"
 
+#include "ExtraStage.h"
 
 using ev3api::ColorSensor;
 using ev3api::SonarSensor;
@@ -59,7 +60,6 @@ using ev3api::Clock;
 
 
 /* Bluetooth */
-static int32_t bt_cmd = 0; /* Bluetoothコマンド 1:リモートスタート */
 static FILE *bt = NULL; /* Bluetoothファイルハンドル */
 
 
@@ -111,6 +111,7 @@ static CalibrationController *gCalibrationController;
 static StartInstructionGet *gStartInstructionGet;
 static StartController *gStartController;
 
+static ExtraStage *gExtraStage;
 
 /* メインタスク */
 void main_task(intptr_t unused) {
@@ -139,6 +140,7 @@ void main_task(intptr_t unused) {
 	gStartInstructionGet = new StartInstructionGet(gUiGet);
 	gStartController = new StartController(gStartInstructionGet,gPostureAdjustment,gClock);
 
+	gExtraStage = new ExtraStage(gMotorDrive, gDeviceValueGet, gClock);
 
 	/* LCD画面表示 */
 	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
@@ -171,6 +173,9 @@ void main_task(intptr_t unused) {
 	/*競技走行*/
 	gCompetitionrunning-> CompetitionRun();
 
+	/*難所*/
+	gExtraStage -> ExtraRun();
+
 // ログ
 //		char cBuff[1024];
 //		sprintf(cBuff, "Main,%d\n", gClock.now());
@@ -198,11 +203,12 @@ void bt_task(intptr_t unused) {
 		uint8_t c = fgetc(bt); /* 受信 */
 		switch (c) {
 		case '1':
-			bt_cmd = 1;
+			//なんかしらの処理
 			break;
 		default:
 			break;
 		}
 		fputc(c, bt); /* エコーバック */
 	}
+
 }

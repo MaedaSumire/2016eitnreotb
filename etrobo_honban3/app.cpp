@@ -94,6 +94,8 @@ Motor gRightMotor(PORT_B);
 Motor gTailMotor(PORT_A);
 Clock gClock;
 
+static int course;
+
 // オブジェクトの定義
 static MotorDrive *gMotorDrive;
 static DeviceValueGet *gDeviceValueGet;
