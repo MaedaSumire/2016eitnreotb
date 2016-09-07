@@ -16,11 +16,8 @@ APPL_CXXOBJS += \
 	SectionDecision.o \
 	SectionDecisionController.o \
 	CompetitionRunning.o \
-	ColorGet.o \
-	PostureAdjustment.o \
 	CalibrationController.o \
-	StartInstructionGet.o \
-	StartController.o
+	StartController.o 
 
 
 SRCLANG := c++
@@ -37,6 +34,6 @@ APPL_DIR += $(mkfile_path)CompetitionRunning $(mkfile_path)DeviceAccess $(mkfile
 INCLUDES += \
 	-I$(mkfile_path)CompetitionRunning \
 	-I$(mkfile_path)DeviceAccess \
-	-I$(mkfile_path)Calibration
+	-I$(mkfile_path)Calibration 
 
 COPTS += -fno-use-cxa-atexit

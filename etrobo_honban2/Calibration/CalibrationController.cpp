@@ -1,26 +1,6 @@
 //キャリブレーションコントローラ
 #include "CalibrationController.h"
 
-//CalibrationController::CalibrationController(ev3api::GyroSensor& gyrosensor,
-//											ev3api::Motor& leftmotor,
-//											ev3api::Motor& rightmotor,
-//											ev3api::Motor& tailmotor,
-//											ev3api::Clock& clock,
-//											PostureAdjustment* postureadjustment,
-//											ColorGet* colorget,
-//											UIGet* uiget)
-//	:mGyroSensor(gyrosensor),
-//	 mLeftMotor(leftmotor),
-//	 mRightMotor(rightmotor),
-//	 mTailMotor(tailmotor),
-//	 mClock(clock),
-//	 mPostureAdjustment(postureadjustment),
-//	 mColorGet(colorget),
-//	 mUIGet(uiget){
-//}
-
-
-
 CalibrationController::CalibrationController(ev3api::GyroSensor& gyrosensor,
 											ev3api::Clock& clock,
 											MotorDrive* motordrive,
@@ -38,18 +18,13 @@ CalibrationController::CalibrationController(ev3api::GyroSensor& gyrosensor,
 	mCalibrat.TailAngleStandUp	= 93.0;	// 直立時尻尾角度
 }
 
+//グローバル変数　LコースかRコースかを格納
 int gCourse;
 
-//CC = CalibrateColor 黒色・白色の輝度
 //メソッド： void キャリブレーションする（）
 void CalibrationController::Calibrate(){
-//	CC cc;
 	UI	ui;
 	DV	dv;
-
-
-	//画面出力（削除可）
-	ev3_lcd_draw_string("calibration_start", 0, 0);
 
 	//センサ・モータを初期化する
 	SensorMotorinit();
@@ -58,22 +33,24 @@ void CalibrationController::Calibrate(){
 	Disp();
 
 	while(1){
-		ev3_lcd_draw_string("Lcourse '<' or Rcourse '>'", 0, 0);
+		ev3_lcd_draw_string("LCourse '<' or RCourse '>'", 0, 0);
 		ui	= mUIGet->UIGetter();	// ループ１回につきUIGetterは１回にしないと取得できない
-		if( ui.Button == 'L'){
+		if( ui.Button == 'L'){// EV3 Left_BUTTON押下
 			gCourse = 1;
-			ev3_lcd_draw_string("Lcourse", 0, 10);
-			break; // EV3 Left_BUTTON押下
+			ev3_lcd_draw_string("LCourse", 0, 10);
+			break;
 		}
-		else if( ui.Button == 'R' ){
+		else if( ui.Button == 'R' ){// EV3 Right_BUTTON押下
 			gCourse = 2;
-			ev3_lcd_draw_string("Rcourse", 0, 10);
-			break; // EV3 Right_BUTTON押下
+			ev3_lcd_draw_string("RCourse", 0, 10);
+			break;
 		}
 	}
 
+	//画面出力（削除可）
+	ev3_lcd_draw_string("calibration_start", 0, 20);
+
 	//終了条件に達するまで姿勢調節・輝度取得を実施
-	//while(mUIGet->UIGetter().Button != 'E'){
 	while(1){
 		ui	= mUIGet->UIGetter();	// ループ１回につきUIGetterは１回にしないと取得できない
 
@@ -91,12 +68,6 @@ void CalibrationController::Calibrate(){
 			Disp();
 		}
 
-		// しっぽ角度調整クラスmPostureAdjustment()は使用しない
-		// 理由：PostureAdjust()内で呼ばれるUIGetter()が干渉して動作しない為
-		//
-		//mPostureAdjustment -> PostureAdjust();	// しっぽ角度調整
-		//cc = mColorGet -> ColorGetter();
-
 		/*しっぽ角度調整*/
 		if ( ui.Button == 'U' ){
 			mCalibrat.TailAngleStandUp += 0.05;
@@ -109,16 +80,13 @@ void CalibrationController::Calibrate(){
 		mClock.sleep(10);
 	}
 	//画面出力（削除可）
-	ev3_lcd_draw_string("calibration_end", 0, 10);
+	ev3_lcd_draw_string("calibration_end", 0, 30);
 
 }
 
 //メソッド: void センサ・モータを初期化する()
 void CalibrationController::SensorMotorinit(){
 	mGyroSensor.reset();
-//	mLeftMotor.reset();
-//	mRightMotor.reset();
-//	mTailMotor.reset();
 	mMotorDrive->reset();
 }
 
