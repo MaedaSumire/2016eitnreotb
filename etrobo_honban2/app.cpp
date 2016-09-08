@@ -28,6 +28,9 @@
 #include "CalibrationController.h"
 #include "StartController.h"
 
+#include "ExtraStageLookUp.h"
+#include "ExtraStageStep.h"
+
 #include "ev3api.h"
 #include "app.h"
 #include "balancer.h"
@@ -105,6 +108,9 @@ static CompetitionRunning *gCompetitionrunning;
 static CalibrationController *gCalibrationController;
 static StartController *gStartController;
 
+static ExtraStageLookUp *gExtraStageLookUp;
+static ExtraStageStep *gExtraStageStep;
+
 
 /* メインタスク */
 void main_task(intptr_t unused) {
@@ -130,6 +136,10 @@ void main_task(intptr_t unused) {
 
 	gCalibrationController = new CalibrationController(gGyroSensor, gClock, gMotorDrive, gDeviceValueGet, gUiGet);
 	gStartController = new StartController(gCalibrationController, gMotorDrive, gUiGet, gClock);
+
+	gExtraStageLookUp = new ExtraStageLookUp(gMotorDrive, gDeviceValueGet, gClock);
+	gExtraStageStep = new ExtraStageStep(gMotorDrive, gDeviceValueGet, gPidcalculation, gRunningcalculation, gClock);
+
 
 	/* LCD画面表示 */
 	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
@@ -159,6 +169,12 @@ void main_task(intptr_t unused) {
 	/*競技走行*/
 	gCompetitionrunning-> CompetitionRun();
 
+	/*ルックアップゲート攻略*/
+	//gExtraStageLookUp->ExtraRun();
+
+	/*階段攻略*/
+	//gExtraStageStep->ExtraRun();
+	
 	/*終了処理*/
 	gLeftMotor.reset();
 	gRightMotor.reset();

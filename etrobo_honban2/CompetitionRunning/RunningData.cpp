@@ -23,10 +23,10 @@ RD RunningData::referData(int now_section){
 	float mforwardCur = 30;
 
 	if(gCourse == 1){//Lコースだったら
-		double mKP[7] = {1.4,	mKPStr,	1.4,	mKPStr,	1.4,	mKPStr,	1.4};
-		double mKI[7] = {0.2,	0.1,	0.2,	0.1,	0.2,	0.1,	0.2};
-		double mKD[7] = {0.02,	0.02,	0.02,	0.02,	0.02,	0.02,	0.02};
-		float mforward[7] = {mforwardStart,mforwardStr,mforwardCur,mforwardStr,40,mforwardStr,40};
+		double mKP[7] = {0.3,	mKPStr,	1.4,	mKPStr,	0.95,	mKPStr,	0.80};
+		double mKI[7] = {0.08,	0.1,	0.2,	0.1,	0.2,	0.1,	0.3};
+		double mKD[7] = {0.01,	0.04,	0.02,	0.04,	0.02,	0.04,	0.03};
+		float mforward[7] = {mforwardStart,mforwardStr,mforwardCur,mforwardStr,40,mforwardStr,70};
 
 		rd.KP = mKP[now_section];
 		rd.KI = mKI[now_section];
