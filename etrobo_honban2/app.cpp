@@ -14,7 +14,6 @@
 #include "CompetitionRunning.h"
 
 #include "CalibrationController.h"
-#include "StartController.h"
 
 #include "ev3api.h"
 #include "app.h"
@@ -67,7 +66,6 @@ static UIGet *gUiGet;
 static CompetitionRunning *gCompetitionrunning;
 
 static CalibrationController *gCalibrationController;
-static StartController *gStartController;
 
 static ExtraStageLookUp *gExtraStageLookUp;
 static ExtraStageStep *gExtraStageStep;
@@ -87,9 +85,12 @@ void main_task(intptr_t unused) {
 
 	gCalibrationController = new CalibrationController(gDeviceInterface,
 			gUiGet);
+<<<<<<< HEAD
 
 	gStartController = new StartController(gDeviceInterface,
 			gCalibrationController, gUiGet);
+=======
+>>>>>>> remotes/origin/maeda
 
 	gExtraStageLookUp = new ExtraStageLookUp(gDeviceInterface);
 	gExtraStageStep = new ExtraStageStep(gDeviceInterface);
@@ -106,9 +107,6 @@ void main_task(intptr_t unused) {
 
 	/*キャリブレーション*/
 	gCalibrationController->Calibrate();
-
-	/* スタート待機 */
-	gStartController->StartDicision();
 
 	/* 再度初期化 */
 	gDeviceInterface->m_pCLeftMotor->reset();
@@ -144,7 +142,10 @@ void main_task(intptr_t unused) {
 	delete gUiGet;
 	delete gCompetitionrunning;
 	delete gCalibrationController;
+<<<<<<< HEAD
 	delete gStartController;
+=======
+>>>>>>> remotes/origin/maeda
 
 	ext_tsk();
 
