@@ -14,7 +14,6 @@
 #include "CompetitionRunning.h"
 
 #include "CalibrationController.h"
-#include "StartController.h"
 
 #include "ev3api.h"
 #include "app.h"
@@ -67,7 +66,6 @@ static UIGet *gUiGet;
 static CompetitionRunning *gCompetitionrunning;
 
 static CalibrationController *gCalibrationController;
-static StartController *gStartController;
 
 static ExtraStageLookUp *gExtraStageLookUp;
 static ExtraStageStep *gExtraStageStep;
@@ -88,9 +86,6 @@ void main_task(intptr_t unused) {
 	gCalibrationController = new CalibrationController(gDeviceInterface,
 			gUiGet);
 
-	gStartController = new StartController(gDeviceInterface,
-			gCalibrationController, gUiGet);
-
 	gExtraStageLookUp = new ExtraStageLookUp(gDeviceInterface);
 	gExtraStageStep = new ExtraStageStep(gDeviceInterface);
 
@@ -104,11 +99,8 @@ void main_task(intptr_t unused) {
 	/* Bluetooth通信タスクの起動 */
 	act_tsk (BT_TASK);
 
-	/*キャリブレーション*/
+	/*キャリブレーション＆スタート待機*/
 	gCalibrationController->Calibrate();
-
-	/* スタート待機 */
-	gStartController->StartDicision();
 
 	/* 再度初期化 */
 	gDeviceInterface->m_pCLeftMotor->reset();
@@ -144,7 +136,6 @@ void main_task(intptr_t unused) {
 	delete gUiGet;
 	delete gCompetitionrunning;
 	delete gCalibrationController;
-	delete gStartController;
 
 	ext_tsk();
 
