@@ -2,20 +2,25 @@
 #define SECTIONDECISIONCONTROLLER_H_
 
 #include "ev3api.h"
+#include "DeviceInterface.h"
 #include "SectionDecision.h"
 #include "DeviceValueGet.h"
 
 class SectionDecisionController {
 public:
 
-	SectionDecisionController(SectionDecision* sectiondecision,
-			DeviceValueGet* devicevalueget);
+	SectionDecisionController(
+			DeviceInterface* pDeviceInterface
+			);
+
+	~SectionDecisionController();
+
 	int SectionIdentify(int now_section);
 
 private:
+	DeviceValueGet* m_pDeviceValueGet;
 
-	SectionDecision* mSectionDecision;
-	DeviceValueGet* mDeviceValueGet;
+	SectionDecision m_SectionDecision;
 };
 
 #endif  // SECTIONDECISIONCONTROLLER_H_

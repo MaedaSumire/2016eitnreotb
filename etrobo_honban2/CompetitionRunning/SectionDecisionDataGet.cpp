@@ -1,8 +1,8 @@
 //現区間判断データ取得
 #include "SectionDecisionDataGet.h"
 
-SectionDecisionDataGet::SectionDecisionDataGet(SectionDecisionData* sectiondecisiondata)
-	:mSectionDecisionData(sectiondecisiondata){
+SectionDecisionDataGet::SectionDecisionDataGet()
+{
 }
 
 //SDD = SectionDecisionData
@@ -11,7 +11,7 @@ SDD SectionDecisionDataGet::SectionDecisionDataGetter(int now_section){
 
 	SDD sdd;
 
-	sdd = mSectionDecisionData -> referData(now_section);
+	sdd = m_SectionDecisionData.referData(now_section);
 
 	return sdd;
 }

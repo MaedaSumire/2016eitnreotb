@@ -1,8 +1,8 @@
 //区間判断(演算)
 #include "SectionDecision.h"
 
-SectionDecision::SectionDecision(SectionDecisionDataGet* sectiondecisiondataget) :
-		mSectionDecisionDataGet(sectiondecisiondataget) {
+SectionDecision::SectionDecision()
+{
 }
 
 extern int gCourse;
@@ -16,7 +16,7 @@ bool SectionDecision::SwitchingDecision(DV dv, int now_section) {
 	bool result = false;
 
 	//現区間の判断データを取ってくる
-	sdd = mSectionDecisionDataGet->SectionDecisionDataGetter(now_section);
+	sdd = m_SectionDecisionDataGet.SectionDecisionDataGetter(now_section);
 
 	/*計算とか比較とか*/
 	if (gCourse == 1) {//Lコースだったら

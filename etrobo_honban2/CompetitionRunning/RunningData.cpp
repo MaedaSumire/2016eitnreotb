@@ -26,7 +26,7 @@ RD RunningData::referData(int now_section){
 		double mKP[7] = {0.3,	mKPStr,	1.4,	mKPStr,	0.95,	mKPStr,	0.80};
 		double mKI[7] = {0.08,	0.1,	0.2,	0.1,	0.2,	0.1,	0.3};
 		double mKD[7] = {0.01,	0.04,	0.02,	0.04,	0.02,	0.04,	0.03};
-		float mforward[7] = {mforwardStart,mforwardStr,mforwardCur,mforwardStr,40,mforwardStr,70};
+		float mforward[7] = {mforwardStart,mforwardStr,mforwardCur,mforwardStr,40,mforwardStr,50};
 
 		rd.KP = mKP[now_section];
 		rd.KI = mKI[now_section];

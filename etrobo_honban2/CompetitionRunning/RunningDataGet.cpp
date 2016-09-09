@@ -1,8 +1,9 @@
 //区間走行データ取得
 #include "RunningDataGet.h"
 
-RunningDataGet::RunningDataGet(RunningData* runningdata)
-	:mRunningData(runningdata){
+
+RunningDataGet::RunningDataGet()
+{
 }
 
 //RD = RunningData
@@ -11,7 +12,7 @@ RD RunningDataGet::RunningDataGetter(int now_section){
 
 	RD rd;
 
-	rd = mRunningData -> referData(now_section);
+	rd = mRunningData.referData(now_section);
 
 	return rd;
 }

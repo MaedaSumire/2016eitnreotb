@@ -9,18 +9,20 @@ class StartController {
 public:
 
 	StartController(
+			DeviceInterface* 		pDeviceInterface,
 			CalibrationController*	calibrationcontroller,
-			MotorDrive* motordrive,
-			UIGet* uiget,
-			ev3api::Clock& clock );
+			UIGet* uiget
+			);
+
+	~StartController();
 
 	void StartDicision();
 
 private:
-	ev3api::Clock& mClock;
-	CalibrationController* mCalibrationController;
-	MotorDrive* mMotorDrive;
-	UIGet* mUIGet;
+	DeviceInterface*		m_pDeviceInterface;
+	CalibrationController*	m_pCalibrationController;
+	UIGet* 					m_pUIGet;
+	MotorDrive*				m_pMotorDrive;
 };
 
 #endif  // STARTCONTROLLER_H_

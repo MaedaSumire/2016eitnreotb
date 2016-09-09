@@ -8,38 +8,20 @@
  ******************************************************************************
  **/
 
-#include "MotorDrive.h"
 #include "DeviceValueGet.h"
 #include "UIGet.h"
 
-#include "RunningData.h"
-#include "PIDCalculation.h"
-#include "RunningDataGet.h"
-#include "RunningCalculation.h"
-#include "RunningController.h"
-
-#include "SectionDecisionData.h"
-#include "SectionDecisionDataGet.h"
-#include "SectionDecision.h"
-#include "SectionDecisionController.h"
 
 #include "CompetitionRunning.h"
 
 #include "CalibrationController.h"
 #include "StartController.h"
 
-#include "ExtraStageLookUp.h"
-#include "ExtraStageStep.h"
-
 #include "ev3api.h"
 #include "app.h"
 #include "balancer.h"
-#include "TouchSensor.h"
-#include "SonarSensor.h"
-#include "ColorSensor.h"
-#include "GyroSensor.h"
-#include "Motor.h"
-#include "Clock.h"
+
+#include "DeviceInterface.h"
 
 
 using ev3api::ColorSensor;
@@ -57,6 +39,8 @@ using ev3api::Clock;
 #define _debug(x)
 #endif
 
+
+/* Bluetooth */
 
 BLUET*	gpBlueT;
 
@@ -77,73 +61,37 @@ BLUET*	gpBlueT;
 
 // Device objects
 // オブジェクトを静的に確保する
-TouchSensor gTouchSensor(PORT_1);
-SonarSensor gSonarSensor(PORT_2);
-ColorSensor gColorSensor(PORT_3);
-GyroSensor gGyroSensor(PORT_4);
-Motor gLeftMotor(PORT_C);
-Motor gRightMotor(PORT_B);
-Motor gTailMotor(PORT_A);
-Clock gClock;
-
+DeviceInterface*			gDeviceInterface;	// デバイスインターフェイス
 
 // オブジェクトの定義
-static MotorDrive *gMotorDrive;
-static DeviceValueGet *gDeviceValueGet;
+
 static UIGet *gUiGet;
-
-static PIDCalculation *gPidcalculation;
-static RunningData *gRunningdata;
-static RunningDataGet *gRunningdataget;
-static RunningCalculation *gRunningcalculation;
-static RunningController *gRunningcontroller;
-
-static SectionDecisionData *gSectiondecisiondata;
-static SectionDecisionDataGet *gSectiondecisiondataget;
-static SectionDecision *gSectiondecision;
-static SectionDecisionController *gSectiondecisioncontroller;
 
 static CompetitionRunning *gCompetitionrunning;
 
 static CalibrationController *gCalibrationController;
 static StartController *gStartController;
 
-static ExtraStageLookUp *gExtraStageLookUp;
-static ExtraStageStep *gExtraStageStep;
-
 
 /* メインタスク */
 void main_task(intptr_t unused) {
 
+	gDeviceInterface	= new DeviceInterface();	// デバイスインターフェイス構築
+
 	/*オブジェクトの生成*/
-	gMotorDrive = new MotorDrive(gLeftMotor, gRightMotor, gTailMotor);
-	gDeviceValueGet = new DeviceValueGet(gSonarSensor, gColorSensor, gGyroSensor, gLeftMotor, gRightMotor, gTailMotor);
-	gUiGet = new UIGet(gTouchSensor);
+	gUiGet = new UIGet(gDeviceInterface);
 	gpBlueT	= gUiGet->GetBlueT();	// ブルーツース構造体の取得
 
-	gRunningdata = new RunningData();
-	gPidcalculation = new PIDCalculation();
-	gRunningdataget = new RunningDataGet(gRunningdata);
-	gRunningcalculation = new RunningCalculation(gPidcalculation, gRunningdataget);
-	gRunningcontroller = new RunningController(gDeviceValueGet, gRunningcalculation, gMotorDrive, gUiGet, gClock);
+	gCompetitionrunning = new CompetitionRunning(gDeviceInterface, gUiGet);
 
-	gSectiondecisiondata = new SectionDecisionData();
-	gSectiondecisiondataget = new SectionDecisionDataGet(gSectiondecisiondata);
-	gSectiondecision = new SectionDecision(gSectiondecisiondataget);
-	gSectiondecisioncontroller = new SectionDecisionController(gSectiondecision, gDeviceValueGet);
+	gCalibrationController = new CalibrationController(gDeviceInterface, gUiGet);
 
-	gCompetitionrunning = new CompetitionRunning(gRunningcontroller, gSectiondecisioncontroller, gMotorDrive, gUiGet, gClock);
-
-	gCalibrationController = new CalibrationController(gGyroSensor, gClock, gMotorDrive, gDeviceValueGet, gUiGet);
-	gStartController = new StartController(gCalibrationController, gMotorDrive, gUiGet, gClock);
-
-	gExtraStageLookUp = new ExtraStageLookUp(gMotorDrive, gDeviceValueGet, gClock);
-	gExtraStageStep = new ExtraStageStep(gMotorDrive, gDeviceValueGet, gPidcalculation, gRunningcalculation, gClock);
-
+	gStartController = new StartController(gDeviceInterface, gCalibrationController, gUiGet);
 
 	/* LCD画面表示 */
 	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
 
+	/* Open Bluetooth file */
 	gpBlueT->pBtFile	= ev3_serial_open_file(EV3_SERIAL_BT);
 	assert(gpBlueT->pBtFile != NULL);
 
@@ -157,9 +105,9 @@ void main_task(intptr_t unused) {
 	gStartController->StartDicision();
 
 	/* 再度初期化 */
-	gLeftMotor.reset();
-	gRightMotor.reset();
-	gGyroSensor.reset();
+	gDeviceInterface->m_pCLeftMotor->reset();
+	gDeviceInterface->m_pCRightMotor->reset();
+	gDeviceInterface->m_pCGyroSensor->reset();
 	balance_init(); /* 倒立振子API初期化 */
 
 	/**
@@ -169,18 +117,19 @@ void main_task(intptr_t unused) {
 	/*競技走行*/
 	gCompetitionrunning-> CompetitionRun();
 
-	/*ルックアップゲート攻略*/
-	//gExtraStageLookUp->ExtraRun();
-
-	/*階段攻略*/
-	//gExtraStageStep->ExtraRun();
-	
 	/*終了処理*/
-	gLeftMotor.reset();
-	gRightMotor.reset();
+	gDeviceInterface->m_pCLeftMotor->reset();
+	gDeviceInterface->m_pCRightMotor->reset();
 	ter_tsk(BT_TASK);
 
+	//fclose(pbt_File);
 	fclose(gpBlueT->pBtFile);
+
+	delete	gDeviceInterface;
+	delete	gUiGet;
+	delete	gCompetitionrunning;
+	delete	gCalibrationController;
+	delete	gStartController;
 
 	ext_tsk();
 

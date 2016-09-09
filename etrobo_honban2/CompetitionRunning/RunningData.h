@@ -2,7 +2,6 @@
 #define RUNNINGDATA_H_
 
 #include "ev3api.h"
-#include "CalibrationController.h"
 
 typedef struct{
 	double KP;
@@ -20,11 +19,6 @@ public:
 	RD referData(int now_section);
 
 private:
-
-	double mKP[7];
-	double mKI[7];
-	double mKD[7];
-	float mforward[7];
 
 };
 

@@ -11,15 +11,15 @@
 class RunningCalculation {
 public:
 
-	RunningCalculation(PIDCalculation* pidcalculation,
-			RunningDataGet* runningdataget);
+	RunningCalculation();
+
 	DV RunningCalculate(DV dv,int now_section);
 
 
 private:
 
-	PIDCalculation* mPIDCalculation;
-	RunningDataGet* mRunningDataGet;
+	PIDCalculation	mPIDCalculation;
+	RunningDataGet	mRunningDataGet;
 
 };
 

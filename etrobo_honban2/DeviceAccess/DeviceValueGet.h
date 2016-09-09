@@ -1,11 +1,7 @@
 #ifndef EV3_APP_DEVICEVALUEGET_H_
 #define EV3_APP_DEVICEVALUEGET_H_
 
-#include "ev3api.h"
-#include "SonarSensor.h"
-#include "ColorSensor.h"
-#include "GyroSensor.h"
-#include "Motor.h"
+#include "DeviceInterface.h"
 
 typedef struct{
 	int16_t sonar;
@@ -22,21 +18,14 @@ typedef struct{
 
 class DeviceValueGet {
 public:
-	DeviceValueGet(ev3api::SonarSensor& sonarsensor,
-				   ev3api::ColorSensor& colorsensor,
-				   ev3api::GyroSensor& gyrosensor,
-				   ev3api::Motor& leftmotor,
-				   ev3api::Motor& rightmotor,
-				   ev3api::Motor& tailmotor);
+
+	DeviceValueGet( DeviceInterface* pDeviceInterface );
+
 	DV DeviceValueGetter();
 
 private:
-		ev3api::SonarSensor& mSonarSensor;
-		ev3api::ColorSensor& mColorSensor;
-		ev3api::GyroSensor& mGyroSensor;
-		ev3api::Motor& mLeftMotor;
-		ev3api::Motor& mRightMotor;
-		ev3api::Motor& mTailMotor;
+
+		DeviceInterface* m_pDeviceInterface;
 };
 
 #endif  // EV3_APP_DEVICEVALUEGET_H_

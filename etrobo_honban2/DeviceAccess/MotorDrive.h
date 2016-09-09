@@ -1,16 +1,12 @@
 #ifndef MOTORDRIVE_H_
 #define MOTORDRIVE_H_
 
-#include "ev3api.h"
-#include "Motor.h"
-
+#include "DeviceInterface.h"
 
 class MotorDrive {
 public:
 	
-	MotorDrive(ev3api::Motor& leftmotor,
-			   ev3api::Motor& rightmotor,
-			   ev3api::Motor& tailmotor);
+	MotorDrive( DeviceInterface* pDeviceInterface );
 	
 	void LRMotorDrive(	int8_t leftPWM,
 						int8_t rightPWM);
@@ -19,9 +15,8 @@ public:
 	void reset();
 
 private:
-	ev3api::Motor& mLeftMotor;
-	ev3api::Motor& mRightMotor;
-	ev3api::Motor& mTailMotor;
+
+	DeviceInterface* m_pDeviceInterface;
 };
 
 #endif  // MOTORDRIVE_H_

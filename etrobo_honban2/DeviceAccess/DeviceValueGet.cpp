@@ -1,19 +1,9 @@
 //デバイス値取得
 #include "DeviceValueGet.h"
 
-
-DeviceValueGet::DeviceValueGet(ev3api::SonarSensor& sonarsensor,
-							   ev3api::ColorSensor& colorsensor,
-							   ev3api::GyroSensor& gyrosensor,
-							   ev3api::Motor& leftmotor,
-							   ev3api::Motor& rightmotor,
-							   ev3api::Motor& tailmotor)
-		:mSonarSensor(sonarsensor),
-		 mColorSensor(colorsensor),
-		 mGyroSensor(gyrosensor),
-		 mLeftMotor(leftmotor),
-		 mRightMotor(rightmotor),
-		 mTailMotor(tailmotor){
+DeviceValueGet::DeviceValueGet( DeviceInterface* pDeviceInterface )
+{
+	m_pDeviceInterface	= pDeviceInterface;
 }
 
 //DV = DeviceValue
@@ -21,14 +11,15 @@ DeviceValueGet::DeviceValueGet(ev3api::SonarSensor& sonarsensor,
 DV DeviceValueGet::DeviceValueGetter(){
 	DV dv;
 
-	dv.sonar = mSonarSensor.getDistance();
-	dv.color = mColorSensor.getBrightness();
-	dv.gyro = mGyroSensor.getAnglerVelocity();
-	dv.Lmotor_angle = mLeftMotor.getCount();
-	dv.Rmotor_angle = mRightMotor.getCount();
-	dv.Tmotor = mTailMotor.getCount();
-	dv.GYRO_OFFSET = 0;
-	dv.volt = ev3_battery_voltage_mV();
+
+	dv.sonar 		= m_pDeviceInterface->m_pCSonarSensor->getDistance();
+	dv.color 		= m_pDeviceInterface->m_pCColorSensor->getBrightness();
+	dv.gyro 		= m_pDeviceInterface->m_pCGyroSensor->getAnglerVelocity();
+	dv.Lmotor_angle = m_pDeviceInterface->m_pCLeftMotor->getCount();
+	dv.Rmotor_angle = m_pDeviceInterface->m_pCRightMotor->getCount();
+	dv.Tmotor 		= m_pDeviceInterface->m_pCTailMotor->getCount();
+	dv.GYRO_OFFSET 	= 0;
+	dv.volt 		= m_pDeviceInterface->m_pCBattery->GetmV();
 	dv.Lmotor_pwm = 0;
 	dv.Rmotor_pwm = 0;
 

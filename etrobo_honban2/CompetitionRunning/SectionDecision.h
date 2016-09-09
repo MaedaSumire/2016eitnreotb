@@ -9,12 +9,12 @@
 class SectionDecision {
 public:
 
-	SectionDecision(SectionDecisionDataGet* sectiondecisiondataget);
+	SectionDecision();
 	bool SwitchingDecision(DV dv,int now_section);
 
 private:
 
-	SectionDecisionDataGet* mSectionDecisionDataGet;
+	SectionDecisionDataGet m_SectionDecisionDataGet;
 
 };
 

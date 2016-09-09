@@ -1,10 +1,8 @@
 //走行演算
 #include "RunningCalculation.h"
 
-RunningCalculation::RunningCalculation(PIDCalculation* pidcalculation,
-										RunningDataGet* runningdataget)
-	:mPIDCalculation(pidcalculation),
-	 mRunningDataGet(runningdataget){
+RunningCalculation::RunningCalculation()
+{
 }
 
 //DV = DeviceValue
@@ -14,10 +12,10 @@ DV RunningCalculation::RunningCalculate(DV dv,int now_section){
 	double turn;
 
 	//区間走行データを持ってくる
-	rd = mRunningDataGet->RunningDataGetter(now_section);
+	rd = mRunningDataGet.RunningDataGetter(now_section);
 
 	//PID計算する
-	turn = mPIDCalculation->PIDCalculate(rd,dv.color);
+	turn = mPIDCalculation.PIDCalculate(rd,dv.color);
 
 	//すべての値を渡し、モータ出力値をポインタで格納してもらう
 	balance_control((float)rd.forward, (float)turn, (float)dv.gyro,(float)dv.GYRO_OFFSET, (float)dv.Lmotor_angle,

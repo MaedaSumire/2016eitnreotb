@@ -1,30 +1,27 @@
 #ifndef COMPETITIONRUNNING_H_
 #define COMPETITIONRUNNING_H_
 
-#include "ev3api.h"
+#include "DeviceInterface.h"
 #include "RunningController.h"
 #include "SectionDecisionController.h"
-#include "MotorDrive.h"
 #include "UIGet.h"
 #include "Clock.h"
 
 class CompetitionRunning {
 public:
+	CompetitionRunning(
+			DeviceInterface* pDeviceInterface,
+			UIGet* guiget
+			);
 
-	CompetitionRunning(RunningController* runningcontroller,
-			SectionDecisionController* sectiondecisioncontroller,
-			MotorDrive* motordrive, UIGet* guiget,
-			ev3api::Clock& clock);
 	void CompetitionRun();
 private:
 
-	RunningController* mRunningController;
-	SectionDecisionController* mSectionDecisionController;
-	MotorDrive* mMotorDrive;
-	UIGet* mUIGet;
-	ev3api::Clock& mClock;
+	DeviceInterface* m_pDeviceInterface;
 
-	int mNowSection;	// ÁèæÂú®„ÅÆÂå∫ÈñìÁï™Âè∑
+	UIGet* m_pUIGet;
+
+	int m_nNowSection;	// åªãÊä‘î‘çÜ
 
 };
 

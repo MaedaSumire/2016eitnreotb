@@ -1,12 +1,8 @@
 #ifndef EV3_APP_UIGET_H_
 #define EV3_APP_UIGET_H_
 
-#include "ev3api.h"
-#include "TouchSensor.h"
+#include "DeviceInterface.h"
 
-//Button -- Left, Right, Up, Down, Back, Enter, None
-//btc -- bluetoothcommand (key)
-//touvh -- TouchSensorisPressed TF
 typedef struct{
 	char Button;	// EV3 本体ボタン
 	uint8_t btcKey;	// ブルーツース通信機器　キーボード入力
@@ -21,7 +17,7 @@ typedef struct{		// ブルーツース構造体
 
 class UIGet {
 public:
-	UIGet(ev3api::TouchSensor& touchsensor);	// コンストラクター
+	UIGet(DeviceInterface* pDeviceInterface);	// コンストラクター
 
 	UI UIGetter();
 
@@ -30,7 +26,7 @@ public:
 	void	WriteLog(char* cBuff);	// ブルーツースログ出力
 
 private:
-	ev3api::TouchSensor& mTouchSensor;	// タッチセンサーインスタンス
+	DeviceInterface* m_pDeviceInterface;
 
 	char	mLogBuff[256];	// ログ出力用文字列バッファー
 	BLUET	mBlueT;		// ブルーツースインスタンス

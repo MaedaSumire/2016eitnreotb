@@ -2,46 +2,47 @@
 #define CALIBRATIONCONTROLLER_H_
 
 #include "ev3api.h"
+#include "DeviceInterface.h"
 #include "MotorDrive.h"
 #include "GyroSensor.h"
 #include "DeviceValueGet.h"
 #include "Clock.h"
 #include "UIGet.h"
 
-typedef struct{		// �␳�l�\����
-	int8_t	White;	// �P�x�@��
-	int8_t	Black;	// �P�x�@��
-	int8_t	Half;	// �P�x�@���Ԓl
-	float	TailAngleStandUp;	// �������K���p�x
+typedef struct{		// 補正値構造体
+	int8_t	White;	// 輝度　白
+	int8_t	Black;	// 輝度　黒
+	int8_t	Half;	// 輝度　中間値
+	float	TailAngleStandUp;	// 直立時尻尾角度
 } CALIBRAT ;
 
 class CalibrationController {
 public:
 
-	CalibrationController(ev3api::GyroSensor& gyrosensor,
-							ev3api::Clock& clock,
-							MotorDrive* motordrive,
-							DeviceValueGet* deviceValueGet,
+	CalibrationController(DeviceInterface* pDeviceInterface,
 							UIGet* uiget);
+
+	~CalibrationController();
 
 	void RunningExecute(int now_section);
 	void Calibrate();
 
-	CALIBRAT&	GetValue();					// �l�擾
-	void		SetValue(CALIBRAT& value);	// �l�ݒ�
+	CALIBRAT&	GetValue();				// 値取得
+	void		SetValue(CALIBRAT& value);	// 値設定
 
 private:
-	void SensorMotorinit();
+	DeviceInterface*	m_pDeviceInterface;
+	UIGet* 				m_pUIGet;
 
-	ev3api::GyroSensor& mGyroSensor;
-	ev3api::Clock& mClock;
-	MotorDrive* mMotorDrive;
-	DeviceValueGet* mDeviceValueGet;
-	UIGet* mUIGet;
+	MotorDrive* m_pMotorDrive;
+	DeviceValueGet* m_pDeviceValueGet;
 
-	CALIBRAT	mCalibrat;	// �␳�l
 
-	// �L�����u���[�V�����l�\��
+	CALIBRAT	mCalibrat;	// 補正値
+
+	void	SensorMotorinit();
+
+	// キャリブレーション値表示
 	void	Disp();
 
 };

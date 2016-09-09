@@ -1,10 +1,16 @@
 //区間判断コントローラ
 #include "SectionDecisionController.h"
 
-SectionDecisionController::SectionDecisionController(SectionDecision* sectiondecision,
-													DeviceValueGet*devicevalueget)
-	:mSectionDecision(sectiondecision),
-	 mDeviceValueGet(devicevalueget){
+SectionDecisionController::SectionDecisionController(
+		DeviceInterface* pDeviceInterface
+		)
+{
+	m_pDeviceValueGet	= new DeviceValueGet(pDeviceInterface);
+}
+
+SectionDecisionController::~SectionDecisionController()
+{
+	delete	m_pDeviceValueGet;
 }
 
 //DV = DeviceValue
@@ -15,10 +21,10 @@ int SectionDecisionController::SectionIdentify(int now_section){
 	bool result;
 
 	//デバイス値を取ってくる
-	dv = mDeviceValueGet -> DeviceValueGetter();
+	dv = m_pDeviceValueGet->DeviceValueGetter();
 
 	//区間切替判断させる
-	result = mSectionDecision -> SwitchingDecision(dv,now_section);
+	result = m_SectionDecision.SwitchingDecision(dv,now_section);
 
 	//切替判断であれば　現区間＋１　する
 	if(result){

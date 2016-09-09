@@ -2,8 +2,10 @@
 #include "UIGet.h"
 
 // コンストラクター
-UIGet::UIGet(ev3api::TouchSensor& touchsensor)
-	:mTouchSensor(touchsensor){
+
+UIGet::UIGet(DeviceInterface* pDeviceInterface )
+{
+	m_pDeviceInterface	= pDeviceInterface;
 
 	mLogBuff[0]	= 0;		// ログ出力用文字列バッファーポインター
 
@@ -49,7 +51,7 @@ UI UIGet::UIGetter(){
 	else if(ev3_button_is_pressed(ENTER_BUTTON)){
 		ui.Button = 'E';
 	}
-	else if(mTouchSensor.isPressed()){
+	else if(m_pDeviceInterface->m_pCTouchSensor->isPressed()){
 		ui.touch = true;
 	}
 
@@ -62,17 +64,6 @@ UI UIGet::UIGetter(){
 		sprintf(sbuff,"test!! [%c]  \n",ui.btcKey);
 		fputs( sbuff, mBlueT.pBtFile); 		// エコーバック
 	}
-
-//	if(*mpBtCmd >= '0'){
-//		ui.btcKey = *mpBtCmd;
-//		*mpBtCmd	= 0;	// キークリア
-//	}
-
-//	char	sbuff[100];
-//	sprintf(sbuff,"test!! [%s]  \n",*mpBtCmd);
-//	fputs( sbuff, mpBtFile); /* エコーバック */
-
-//	ev3_lcd_draw_string(sbuff, 0, 30);
 
 	return ui;
 }

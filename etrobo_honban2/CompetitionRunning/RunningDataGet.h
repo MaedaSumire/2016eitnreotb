@@ -7,13 +7,14 @@
 class RunningDataGet {
 public:
 
-	RunningDataGet(RunningData* runningdata);
+	RunningDataGet();
+
 	RD RunningDataGetter(int now_section);
 
 
 private:
 
-	RunningData* mRunningData;
+	RunningData mRunningData;
 
 };
 

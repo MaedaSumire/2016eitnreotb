@@ -2,28 +2,33 @@
 #include "StartController.h"
 
 StartController::StartController(
+		DeviceInterface* 		pDeviceInterface,
 		CalibrationController*	calibrationcontroller,
-		MotorDrive* motordrive,
-		UIGet* uiget,
-		ev3api::Clock& clock)
-	:mCalibrationController(calibrationcontroller),
-	 mMotorDrive(motordrive),
-	 mUIGet(uiget),
-	 mClock(clock){
+		UIGet* uiget)
+	:m_pDeviceInterface(pDeviceInterface),
+	 m_pCalibrationController(calibrationcontroller),
+	 m_pUIGet(uiget)
+{
+	m_pMotorDrive	= new MotorDrive(pDeviceInterface);
+}
+
+StartController::~StartController()
+{
+	delete	m_pMotorDrive;
 }
 
 //メソッド： void スタート判断する（）
 void StartController::StartDicision(){
 
 	//画面出力（削除可）
-	ev3_lcd_draw_string("taiki_start", 0, 40);
+	ev3_lcd_draw_string("taiki_start", 0, 30);
 
-	CALIBRAT	calibrat	= mCalibrationController->GetValue();	// キャリブレーション値取得
+	CALIBRAT	calibrat	= m_pCalibrationController->GetValue();	// キャリブレーション値取得
 
 	//スタート指示があるまでループ
 	while(1){
 
-		UI ui	= mUIGet->UIGetter();	// ループ１回につきUIGetterは１回にしないと取得できない
+		UI ui	= m_pUIGet->UIGetter();	// ループ１回につきUIGetterは１回にしないと取得できない
 
 		if (ui.touch || ui.btcKey == '1'){
 			break;	// スタート指示
@@ -37,16 +42,16 @@ void StartController::StartDicision(){
 			calibrat.TailAngleStandUp -= 0.05;
 		}
 
-		mMotorDrive->TailMotorDrive(calibrat.TailAngleStandUp);
+		m_pMotorDrive->TailMotorDrive(calibrat.TailAngleStandUp);
 
-		mClock.sleep(10);
+		m_pDeviceInterface->m_pCClock->sleep(10);
 
 	}
 
-	mCalibrationController->SetValue( calibrat );	// キャリブレーション値設定
+	m_pCalibrationController->SetValue( calibrat );	// キャリブレーション値設定
 
 	//画面出力（削除可）
-	ev3_lcd_draw_string("taiki_end", 0, 50);
+	ev3_lcd_draw_string("taiki_end", 0, 40);
 
 }
 
