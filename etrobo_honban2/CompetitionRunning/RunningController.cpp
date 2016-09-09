@@ -44,8 +44,8 @@ void RunningController::RunningExecute(int now_section){
 	char*	cLogBuff	= m_pUIGet->GetBlueT()->pcLogBuff;
 	sprintf(cLogBuff,"%lu,%d,%d\n",
 			m_pDeviceInterface->m_pCClock->now(),
-			dv.Lmotor_pwm,
-			dv.Rmotor_pwm
+			dv.Lmotor_angle,
+			dv.Rmotor_angle
 			);
 	m_pUIGet->WriteLog(cLogBuff);
 }

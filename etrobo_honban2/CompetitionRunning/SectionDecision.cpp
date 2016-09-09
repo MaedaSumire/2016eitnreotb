@@ -103,7 +103,7 @@ bool SectionDecision::SwitchingDecision(DV dv, int now_section) {
 			break;
 			// 区間7
 		case 6:
-			if ((dv.Lmotor_angle - dv.Rmotor_angle) > sdd.TurningAmount) {
+			if (dv.Lmotor_angle > sdd.Distance) {
 				result = true;
 			}
 			break;
