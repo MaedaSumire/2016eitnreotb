@@ -24,8 +24,8 @@ RD RunningData::referData(int now_section){
 
 	if(gCourse == 1){//Lコースだったら
 		double mKP[7] = {0.3,	mKPStr,	1.4,	mKPStr,	0.95,	mKPStr,	0.80};
-		double mKI[7] = {0.08,	0.1,	0.2,	0.1,	0.2,	0.1,	0.3};
-		double mKD[7] = {0.01,	0.04,	0.02,	0.04,	0.02,	0.04,	0.03};
+		double mKI[7] = {0.08,	0.1,	0.2,	0.1,	0.2,	0.1,	0.2};
+		double mKD[7] = {0.01,	0.04,	0.02,	0.04,	0.02,	0.04,	0.04};
 		float mforward[7] = {mforwardStart,mforwardStr,mforwardCur,mforwardStr,40,mforwardStr,50};
 
 		rd.KP = mKP[now_section];
@@ -34,9 +34,9 @@ RD RunningData::referData(int now_section){
 		rd.forward = mforward[now_section];
 	}
 	else if(gCourse == 2){//Rコースだったら
-		double mKP[7] = {0,	mKPStr,	1.4,	mKPStr,	1.4,	mKPStr,	1.4};
-		double mKI[7] = {0,	0.1,	0.2,	0.1,	0.2,	0.1,	0.2};
-		double mKD[7] = {0,	0.02,	0.02,	0.02,	0.02,	0.02,	0.02};
+		double mKP[7] = {0,	 mKPStr,	 1.4,	mKPStr,	 1.6,	mKPStr,	 1.4};
+		double mKI[7] = {0, 	0.1,	 0.4,	   0.1,	 0.5,	   0.1,	 0.2};
+		double mKD[7] = {0,	   0.04,	0.02,	  0.04,	0.09,	  0.04,	0.02};
 		float mforward[7] = {mforwardStart,mforwardStr,mforwardCur,mforwardStr,mforwardCur,50,mforwardCur};
 
 		rd.KP = mKP[now_section];

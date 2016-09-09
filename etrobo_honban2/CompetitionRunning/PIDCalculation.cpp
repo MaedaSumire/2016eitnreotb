@@ -3,26 +3,25 @@
 #include "PIDCalculation.h"
 
 PIDCalculation::PIDCalculation()
-	:mBlack(0.0),
-	 mWhite(40.0),
-	 mGray(20.0),
-	diff1(0),
-	diff2(0),
-	integral(0),
-	p(0),
-	i(0),
-	d(0),
-	turn(0),
-	nBri(26)
-		{
+	:mBlack(1),
+	 mWhite(34),
+	 mHalf(22),
+	 diff1(0),
+	 diff2(0),
+	 integral(0),
+	 p(0),
+	 i(0),
+	 d(0),
+	 turn(0){
+
 }
 
 //DB = DeviceBrightness
 //キャリブレーション時に取得した黒・白・灰色の値を格納
-void PIDCalculation::Calibrate(int8_t DBBlack, int8_t DBWhite, int8_t DBGray){
-	mBlack = DBBlack;
-	mWhite = DBWhite;
-	mGray = DBGray;
+void PIDCalculation::Calibrate(){
+	//mBlack = calibrat.Black;
+	//mWhite = calibrat.White;
+	//mHalf = calibrat.Half;
 }
 
 
@@ -34,7 +33,7 @@ double PIDCalculation::PIDCalculate(RD rd,int8_t DeviceBrightness){
 
 	//PID
 	diff1 = diff2;
-	diff2 = nBri - DeviceBrightness;
+	diff2 = mHalf - DeviceBrightness;
 	integral += (diff2 + diff1) / 2.0 * DELTA_T;
 
 	p = rd.KP * diff2;

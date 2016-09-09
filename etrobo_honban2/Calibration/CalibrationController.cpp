@@ -11,7 +11,6 @@ CalibrationController::CalibrationController(
 	m_pMotorDrive		= new MotorDrive(m_pDeviceInterface);
 	m_pDeviceValueGet	= new DeviceValueGet(m_pDeviceInterface);
 
-
 	mCalibrat.White	= 34;	// 補正値 初期値
 	mCalibrat.Black	= 1;	// 補正値 初期値
 	mCalibrat.Half	= 22;	// 補正値 初期値
@@ -23,9 +22,6 @@ CalibrationController::~CalibrationController()
 	delete	m_pMotorDrive;
 	delete	m_pDeviceValueGet;
 }
-
-
-
 
 //グローバル変数　LコースかRコースかを格納
 int gCourse;
@@ -109,6 +105,8 @@ CALIBRAT&	CalibrationController::GetValue()	// 値取得
 void		CalibrationController::SetValue(CALIBRAT& value)	// 値設定
 {
 	mCalibrat	= value;
+	//mPIDCalculation.Calibrate(mCalibrat);
+
 }
 // キャリブレーション値表示
 void	CalibrationController::Disp()

@@ -8,6 +8,9 @@
 #include "DeviceValueGet.h"
 #include "Clock.h"
 #include "UIGet.h"
+#include "PIDCalculation.h"
+#include "balancer.h"
+#include "RunningDataGet.h"
 
 typedef struct{		// 補正値構造体
 	int8_t	White;	// 輝度　白
@@ -31,12 +34,12 @@ public:
 	void		SetValue(CALIBRAT& value);	// 値設定
 
 private:
+
 	DeviceInterface*	m_pDeviceInterface;
 	UIGet* 				m_pUIGet;
 
 	MotorDrive* m_pMotorDrive;
 	DeviceValueGet* m_pDeviceValueGet;
-
 
 	CALIBRAT	mCalibrat;	// 補正値
 

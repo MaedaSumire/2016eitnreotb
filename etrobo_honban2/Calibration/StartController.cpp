@@ -3,10 +3,10 @@
 
 StartController::StartController(
 		DeviceInterface* 		pDeviceInterface,
-		CalibrationController*	calibrationcontroller,
+		CalibrationController*	pCalibrationcontroller,
 		UIGet* uiget)
 	:m_pDeviceInterface(pDeviceInterface),
-	 m_pCalibrationController(calibrationcontroller),
+	 m_pCalibrationController(pCalibrationcontroller),
 	 m_pUIGet(uiget)
 {
 	m_pMotorDrive	= new MotorDrive(pDeviceInterface);
