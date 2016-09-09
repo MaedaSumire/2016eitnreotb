@@ -11,7 +11,6 @@
 #include "DeviceValueGet.h"
 #include "UIGet.h"
 
-
 #include "CompetitionRunning.h"
 
 #include "CalibrationController.h"
@@ -33,7 +32,6 @@ using ev3api::TouchSensor;
 using ev3api::Motor;
 using ev3api::Clock;
 
-
 #define DEBUG
 #ifdef DEBUG
 #define _debug(x) (x)
@@ -41,11 +39,9 @@ using ev3api::Clock;
 #define _debug(x)
 #endif
 
-
 /* Bluetooth */
 
-BLUET*	gpBlueT;
-
+BLUET* gpBlueT;
 
 /* 下記のマクロは個体/環境に合わせて変更する必要があります */
 #define GYRO_OFFSET           0  /* ジャイロセンサオフセット値(角速度0[deg/sec]時) */
@@ -60,10 +56,9 @@ BLUET*	gpBlueT;
 #define CALIB_FONT_WIDTH (6/*TODO: magic number*/)
 #define CALIB_FONT_HEIGHT (8/*TODO: magic number*/)
 
-
 // Device objects
 // オブジェクトを静的に確保する
-DeviceInterface*			gDeviceInterface;	// デバイスインターフェイス
+DeviceInterface* gDeviceInterface;	// デバイスインターフェイス
 
 // オブジェクトの定義
 
@@ -77,20 +72,24 @@ static StartController *gStartController;
 static ExtraStageLookUp *gExtraStageLookUp;
 static ExtraStageStep *gExtraStageStep;
 
+extern int gCourse;
+
 /* メインタスク */
 void main_task(intptr_t unused) {
 
-	gDeviceInterface	= new DeviceInterface();	// デバイスインターフェイス構築
+	gDeviceInterface = new DeviceInterface();	// デバイスインターフェイス構築
 
 	/*オブジェクトの生成*/
 	gUiGet = new UIGet(gDeviceInterface);
-	gpBlueT	= gUiGet->GetBlueT();	// ブルーツース構造体の取得
+	gpBlueT = gUiGet->GetBlueT();	// ブルーツース構造体の取得
 
 	gCompetitionrunning = new CompetitionRunning(gDeviceInterface, gUiGet);
 
-	gCalibrationController = new CalibrationController(gDeviceInterface, gUiGet);
+	gCalibrationController = new CalibrationController(gDeviceInterface,
+			gUiGet);
 
-	gStartController = new StartController(gDeviceInterface, gCalibrationController, gUiGet);
+	gStartController = new StartController(gDeviceInterface,
+			gCalibrationController, gUiGet);
 
 	gExtraStageLookUp = new ExtraStageLookUp(gDeviceInterface);
 	gExtraStageStep = new ExtraStageStep(gDeviceInterface);
@@ -99,7 +98,7 @@ void main_task(intptr_t unused) {
 	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
 
 	/* Open Bluetooth file */
-	gpBlueT->pBtFile	= ev3_serial_open_file(EV3_SERIAL_BT);
+	gpBlueT->pBtFile = ev3_serial_open_file(EV3_SERIAL_BT);
 	assert(gpBlueT->pBtFile != NULL);
 
 	/* Bluetooth通信タスクの起動 */
@@ -120,11 +119,18 @@ void main_task(intptr_t unused) {
 	/**
 	 * Main loop for the self-balance control algorithm
 	 */
-	
-	/*競技走行*/
-	//gCompetitionrunning-> CompetitionRun();
 
-	gExtraStageStep->ExtraRun();
+	/*競技走行*/
+	gCompetitionrunning->CompetitionRun();
+
+	// Lコース
+	if (gCourse == 1) {
+		// ルックアップゲート
+	}
+	// Rコース
+	else if (gCourse == 2) {
+		gExtraStageStep->ExtraRun();
+	}
 
 	/*終了処理*/
 	gDeviceInterface->m_pCLeftMotor->reset();
@@ -134,11 +140,11 @@ void main_task(intptr_t unused) {
 	//fclose(pbt_File);
 	fclose(gpBlueT->pBtFile);
 
-	delete	gDeviceInterface;
-	delete	gUiGet;
-	delete	gCompetitionrunning;
-	delete	gCalibrationController;
-	delete	gStartController;
+	delete gDeviceInterface;
+	delete gUiGet;
+	delete gCompetitionrunning;
+	delete gCalibrationController;
+	delete gStartController;
 
 	ext_tsk();
 
@@ -156,9 +162,9 @@ void bt_task(intptr_t unused) {
 	while (1) {
 		uint8_t c = fgetc(gpBlueT->pBtFile);	// 受信
 
-		if( c >= '0' ){
+		if (c >= '0') {
 			// キーボード押下
-			gpBlueT->btcKey	= c;
+			gpBlueT->btcKey = c;
 			fputc(gpBlueT->btcKey, gpBlueT->pBtFile); /* エコーバック */
 		}
 

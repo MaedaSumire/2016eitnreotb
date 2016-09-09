@@ -23,7 +23,7 @@ APPL_CXXOBJS += \
 	StartController.o\
 	DeviceInterface.o \
 	ExtraStageLookUp.o \
-	ExtraStageStep.o \
+	ExtraStageStep.o
 
 SRCLANG := c++
 
@@ -40,6 +40,6 @@ INCLUDES += \
 	-I$(mkfile_path)CompetitionRunning \
 	-I$(mkfile_path)DeviceAccess \
 	-I$(mkfile_path)Calibration \
-	-I$(mkfile_path)ExtraStage \
+	-I$(mkfile_path)ExtraStage
 
 COPTS += -fno-use-cxa-atexit
