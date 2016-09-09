@@ -87,11 +87,14 @@ void main_task(intptr_t unused) {
 			gUiGet);
 <<<<<<< HEAD
 
+<<<<<<< HEAD
 	gStartController = new StartController(gDeviceInterface,
 			gCalibrationController, gUiGet);
 =======
 >>>>>>> remotes/origin/maeda
 
+=======
+>>>>>>> maeda
 	gExtraStageLookUp = new ExtraStageLookUp(gDeviceInterface);
 	gExtraStageStep = new ExtraStageStep(gDeviceInterface);
 
@@ -105,7 +108,7 @@ void main_task(intptr_t unused) {
 	/* Bluetooth通信タスクの起動 */
 	act_tsk (BT_TASK);
 
-	/*キャリブレーション*/
+	/*キャリブレーション＆スタート待機*/
 	gCalibrationController->Calibrate();
 
 	/* 再度初期化 */
@@ -143,9 +146,12 @@ void main_task(intptr_t unused) {
 	delete gCompetitionrunning;
 	delete gCalibrationController;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	delete gStartController;
 =======
 >>>>>>> remotes/origin/maeda
+=======
+>>>>>>> maeda
 
 	ext_tsk();
 
