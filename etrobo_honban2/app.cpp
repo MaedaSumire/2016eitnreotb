@@ -23,6 +23,8 @@
 
 #include "DeviceInterface.h"
 
+#include "ExtraStageLookUp.h"
+#include "ExtraStageStep.h"
 
 using ev3api::ColorSensor;
 using ev3api::SonarSensor;
@@ -72,6 +74,8 @@ static CompetitionRunning *gCompetitionrunning;
 static CalibrationController *gCalibrationController;
 static StartController *gStartController;
 
+static ExtraStageLookUp *gExtraStageLookUp;
+static ExtraStageStep *gExtraStageStep;
 
 /* メインタスク */
 void main_task(intptr_t unused) {
@@ -87,6 +91,9 @@ void main_task(intptr_t unused) {
 	gCalibrationController = new CalibrationController(gDeviceInterface, gUiGet);
 
 	gStartController = new StartController(gDeviceInterface, gCalibrationController, gUiGet);
+
+	gExtraStageLookUp = new ExtraStageLookUp(gDeviceInterface);
+	gExtraStageStep = new ExtraStageStep(gDeviceInterface);
 
 	/* LCD画面表示 */
 	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
@@ -115,7 +122,9 @@ void main_task(intptr_t unused) {
 	 */
 	
 	/*競技走行*/
-	gCompetitionrunning-> CompetitionRun();
+	//gCompetitionrunning-> CompetitionRun();
+
+	gExtraStageStep->ExtraRun();
 
 	/*終了処理*/
 	gDeviceInterface->m_pCLeftMotor->reset();
