@@ -33,8 +33,7 @@ void ExtraStageStep::ExtraRun(){
 		dv_now = mDeviceValueGet -> DeviceValueGetter();
 		//dv_now.GYRO_OFFSET = -10;
 
-		/*倒立振子を使用したままライントレースさせる場合*/
-		dv_now = mRunningCalculation->RunningCalculate(dv_now,now_section);
+
 
 
 		//turn = mPIDCalculation -> PIDCalculate(rd,dv_now.color);
@@ -61,11 +60,23 @@ void ExtraStageStep::ExtraRun(){
 		/*ぶつかりを判定します*/
 		/*勢いをつけて上ります*/
 
+
 		//800 < count && 30 < dv_now.gyro - dv_old.gyro
 		if(now_section == 0 && 50 < dv_now.gyro - dv_old.gyro ){
 			ev3_lcd_draw_string("!!collision!!", 0, 100);
 			tail = 85;
 			now_section = 1;
+			count = 0;
+		}
+		else if(now_section == 0){
+			/*倒立振子を使用したままライントレースさせる場合*/
+			dv_now = mRunningCalculation->RunningCalculate(dv_now,now_section);
+		}
+		else if(now_section == 1 && count < 300){
+			mMotorDrive -> LRMotorDrive(40,40);
+		}
+		else{
+			mMotorDrive -> LRMotorDrive(0,0);
 		}
 //		else if(now_section == 1){
 //

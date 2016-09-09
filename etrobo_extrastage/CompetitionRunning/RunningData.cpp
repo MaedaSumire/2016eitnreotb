@@ -34,10 +34,10 @@ RD RunningData::referData(int now_section){
 		rd.forward = mforward[now_section];
 	}
 	else if(gCourse == 2){//Rコースだったら
-		double mKP[7] = {1,	1,	1.4,	mKPStr,	1.4,	mKPStr,	1.4};
-		double mKI[7] = {0,	0,	0.2,	0.1,	0.2,	0.1,	0.2};
-		double mKD[7] = {0,	0,	0.02,	0.02,	0.02,	0.02,	0.02};
-		float mforward[7] = {30,0,mforwardCur,mforwardStr,mforwardCur,50,mforwardCur};
+		double mKP[7] = 	{1,	 0,		    1.4,	  mKPStr,	      1.4,	mKPStr,	        1.4};
+		double mKI[7] = 	{0,	 0,		    0.2,	     0.1,	      0.2,	   0.1,	        0.2};
+		double mKD[7] = 	{0,	 0,		   0.02,		0.02,	     0.02,	  0.02,	       0.02};
+		float mforward[7] = {30, 0, mforwardCur, mforwardStr, mforwardCur,      50, mforwardCur};
 
 //		else if(gCourse == 2){//Rコースだったら
 //			double mKP[7] = {0,	mKPStr,	1.4,	mKPStr,	1.4,	mKPStr,	1.4};
