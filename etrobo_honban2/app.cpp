@@ -85,16 +85,7 @@ void main_task(intptr_t unused) {
 
 	gCalibrationController = new CalibrationController(gDeviceInterface,
 			gUiGet);
-<<<<<<< HEAD
 
-<<<<<<< HEAD
-	gStartController = new StartController(gDeviceInterface,
-			gCalibrationController, gUiGet);
-=======
->>>>>>> remotes/origin/maeda
-
-=======
->>>>>>> maeda
 	gExtraStageLookUp = new ExtraStageLookUp(gDeviceInterface);
 	gExtraStageStep = new ExtraStageStep(gDeviceInterface, gUiGet);
 
@@ -153,13 +144,6 @@ void main_task(intptr_t unused) {
 	delete gUiGet;
 	delete gCompetitionrunning;
 	delete gCalibrationController;
-<<<<<<< HEAD
-<<<<<<< HEAD
-	delete gStartController;
-=======
->>>>>>> remotes/origin/maeda
-=======
->>>>>>> maeda
 
 	ext_tsk();
 
