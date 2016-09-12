@@ -45,10 +45,10 @@ RD RunningData::referData(int now_section){
 		rd.forward = mforward[now_section];
 	}
 	else if(gCourse == 3){//階段
-			double mKP[7] = {0.2,	 0,	 1.4,	mKPStr,	 1.6,	mKPStr,	 1.4};
-			double mKI[7] = {0, 	0,	 0.4,	   0.1,	 0.5,	   0.1,	 0.2};
-			double mKD[7] = {0,	   0,	0.02,	  0.04,	0.09,	  0.04,	0.02};
-			float mforward[7] = {70,0,mforwardCur,mforwardStr,mforwardCur,50,mforwardCur};
+			double mKP[7] 		= {0.2,	0,	0,	mKPStr,	 1.6,	mKPStr,	 1.4};
+			double mKI[7] 		= {0,	0,	0,	   0.1,	 0.5,	   0.1,	 0.2};
+			double mKD[7] 		= {0,	0,	0,	  0.04,	0.09,	  0.04,	0.02};
+			float mforward[7] 	= {30,	0,	0,mforwardCur,50,mforwardCur,0};
 
 			rd.KP = mKP[now_section];
 			rd.KI = mKI[now_section];
