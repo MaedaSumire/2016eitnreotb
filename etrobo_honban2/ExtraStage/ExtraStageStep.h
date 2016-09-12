@@ -6,11 +6,12 @@
 #include "DeviceValueGet.h"
 #include "MotorDrive.h"
 #include "RunningCalculation.h"
+#include "UIGet.h"
 
 class ExtraStageStep {
 public:
 
-	ExtraStageStep(DeviceInterface* deviceinterface);
+	ExtraStageStep(DeviceInterface* deviceinterface, UIGet* UiGet);
 	void ExtraRun();
 
 private:
@@ -19,7 +20,7 @@ private:
 	DeviceValueGet*		m_pDeviceValueGet;
 	MotorDrive*			m_pMotorDrive;
 	RunningCalculation* m_pRunningCalculation;
-
+	UIGet*				m_pUIGet;
 
 };
 
