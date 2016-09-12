@@ -92,7 +92,7 @@ void main_task(intptr_t unused) {
 			gCalibrationController, gUiGet);
 
 	gExtraStageLookUp = new ExtraStageLookUp(gDeviceInterface);
-	gExtraStageStep = new ExtraStageStep(gDeviceInterface);
+	gExtraStageStep = new ExtraStageStep(gDeviceInterface, gUiGet);
 
 	/* LCD画面表示 */
 	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
@@ -121,15 +121,23 @@ void main_task(intptr_t unused) {
 	 */
 
 	/*競技走行*/
-	gCompetitionrunning->CompetitionRun();
+	//gCompetitionrunning->CompetitionRun();
+
+
+
 
 	// Lコース
 	if (gCourse == 1) {
 		// ルックアップゲート
+
+		// ガレージ
 	}
 	// Rコース
 	else if (gCourse == 2) {
+		// 階段
 		gExtraStageStep->ExtraRun();
+
+		//ガレージ
 	}
 
 	/*終了処理*/
