@@ -30,6 +30,8 @@ void CompetitionRunning::CompetitionRun(){
 		//区間判断コントローラに現区間の番号をもらう
 		m_nNowSection = sectionDecisionController.SectionIdentify(m_nNowSection);
 
+		if(m_nNowSection == 7) break;
+
 		//走行コントローラに投げる
 		runningController.RunningExecute(m_nNowSection);
 
