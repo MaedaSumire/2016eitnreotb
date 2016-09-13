@@ -16,7 +16,11 @@ APPL_CXXOBJS += \
 	SectionDecision.o \
 	SectionDecisionController.o \
 	CompetitionRunning.o \
+	ColorGet.o \
+	PostureAdjustment.o \
 	CalibrationController.o \
+	StartInstructionGet.o \
+	StartController.o\
 	DeviceInterface.o \
 	ExtraStageLookUp.o \
 	ExtraStageStep.o

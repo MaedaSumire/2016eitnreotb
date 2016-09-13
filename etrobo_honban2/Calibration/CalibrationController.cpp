@@ -59,7 +59,7 @@ void CalibrationController::Calibrate(){
 	while(1){
 		ui	= m_pUIGet->UIGetter();	// ループ１回につきUIGetterは１回にしないと取得できない
 
-		if( ui.touch || ui.btcKey == '1')	break; // スタート指示
+		if( ui.Button == 'E' )	break; // EV3 ENTER_BUTTON 押下
 
 		if( ui.btcKey >= '0' ){
 			dv	= m_pDeviceValueGet->DeviceValueGetter();		// デバイス値取得
