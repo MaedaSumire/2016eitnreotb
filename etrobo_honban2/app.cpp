@@ -121,7 +121,7 @@ void main_task(intptr_t unused) {
 	// Lコース
 	if (gCourse == 1) {
 		// ルックアップゲート
-
+		gExtraStageLookUp->ExtraRun();
 		// ガレージ
 	}
 	// Rコース
