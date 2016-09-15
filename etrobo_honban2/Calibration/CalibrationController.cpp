@@ -11,7 +11,7 @@ CalibrationController::CalibrationController(
 	m_pMotorDrive		= new MotorDrive(m_pDeviceInterface);
 	m_pDeviceValueGet	= new DeviceValueGet(m_pDeviceInterface);
 
-	mCalibrat.White	= 34;	// 補正値 初期値
+	mCalibrat.White	= 40;	// 補正値 初期値
 	mCalibrat.Black	= 1;	// 補正値 初期値
 	mCalibrat.Half	= 22;	// 補正値 初期値
 	mCalibrat.TailAngleStandUp	= 93.0;	// 直立時尻尾角度
@@ -76,9 +76,11 @@ void CalibrationController::Calibrate(){
 		/*しっぽ角度調整*/
 		if ( ui.Button == 'U' ){
 			mCalibrat.TailAngleStandUp += 0.05;
+			Disp();
 		}
 		else if (ui.Button == 'D'){
 			mCalibrat.TailAngleStandUp -= 0.05;
+			Disp();
 		}
 		m_pMotorDrive->TailMotorDrive(mCalibrat.TailAngleStandUp);
 
@@ -104,8 +106,9 @@ CALIBRAT&	CalibrationController::GetValue()	// 値取得
 // キャリブレーション値設定
 void		CalibrationController::SetValue(CALIBRAT& value)	// 値設定
 {
+
 	mCalibrat	= value;
-	//mPIDCalculation.Calibrate(mCalibrat);
+	//mPIDCalculation.PIDCalibrate(mCalibrat);
 
 }
 // キャリブレーション値表示
@@ -115,6 +118,30 @@ void	CalibrationController::Disp()
 	BLUET* pBt	= m_pUIGet->GetBlueT();	// ブルーツース
 	char*	sbuff	= pBt->pcLogBuff;
 	fputc( '\n', pBt->pBtFile );
+
+	DV	dv	= m_pDeviceValueGet->DeviceValueGetter();		// デバイス値取得
+
+	// コース
+	if(gCourse == 1){
+		sprintf(sbuff,"L Course\n");
+	}else if(gCourse == 2){
+		sprintf(sbuff,"R Course\n");
+	}else{
+		sprintf(sbuff,"Non Course !!!!!!\n");
+	}
+	fputs( sbuff, pBt->pBtFile); 		// エコーバック
+	fputc('\n', pBt->pBtFile);
+
+	// バッテリー
+	sprintf(sbuff,"Battery volt =%ld\n", dv.volt);
+	fputs( sbuff, pBt->pBtFile); 		// エコーバック
+
+	// しっぽ角度
+	sprintf(sbuff,"TailAngleStandUp =%f\n", mCalibrat.TailAngleStandUp);
+	fputs( sbuff, pBt->pBtFile); 		// エコーバック
+	fputc('\n', pBt->pBtFile);
+
+	// 輝度
 	sprintf(sbuff,"w : White =%d\n", mCalibrat.White);
 	fputs( sbuff, pBt->pBtFile); 		// エコーバック
 	sprintf(sbuff,"b : Black =%d\n", mCalibrat.Black);

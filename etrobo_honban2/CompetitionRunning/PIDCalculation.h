@@ -14,7 +14,7 @@ public:
 
 	PIDCalculation();
 
-	void Calibrate();
+	//void PIDCalibrate(CALIBRAT calibrat);
 	double PIDCalculate(RD rd,int8_t DeviceBrightness);
 
 private:

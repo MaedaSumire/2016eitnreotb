@@ -42,10 +42,9 @@ void RunningController::RunningExecute(int now_section){
 
 	//ログ出力
 	char*	cLogBuff	= m_pUIGet->GetBlueT()->pcLogBuff;
-	sprintf(cLogBuff,"%lu,%d,%d\n",
+	sprintf(cLogBuff,"%lu,%d\n",
 			m_pDeviceInterface->m_pCClock->now(),
-			dv.Lmotor_angle,
-			dv.Rmotor_angle
+			dv.volt
 			);
 	m_pUIGet->WriteLog(cLogBuff);
 }

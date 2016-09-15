@@ -4,7 +4,7 @@
 
 PIDCalculation::PIDCalculation()
 	:mBlack(1),
-	 mWhite(34),
+	 mWhite(40),
 	 mHalf(22),
 	 diff1(0),
 	 diff2(0),
@@ -16,13 +16,15 @@ PIDCalculation::PIDCalculation()
 
 }
 
+/*
 //DB = DeviceBrightness
 //キャリブレーション時に取得した黒・白・灰色の値を格納
-void PIDCalculation::Calibrate(){
-	//mBlack = calibrat.Black;
-	//mWhite = calibrat.White;
-	//mHalf = calibrat.Half;
+void PIDCalculation::PIDCalibrate(CALIBRAT calibrat){
+	mBlack = calibrat.Black;
+	mWhite = calibrat.White;
+	mHalf = calibrat.Half;
 }
+*/
 
 
 //SRD = SectionRunningData

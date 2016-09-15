@@ -21,7 +21,7 @@ private:
 
 	UIGet* m_pUIGet;
 
-	int m_nNowSection;	// Œ»‹æŠÔ”Ô†
+	int m_nNowSection;	// ï¿½ï¿½ï¿½ï¿½Ô”Ôï¿½
 
 };
 
