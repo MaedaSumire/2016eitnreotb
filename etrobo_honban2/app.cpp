@@ -44,8 +44,6 @@ BLUET* gpBlueT;
 
 /* 下記のマクロは個体/環境に合わせて変更する必要があります */
 #define GYRO_OFFSET           0  /* ジャイロセンサオフセット値(角速度0[deg/sec]時) */
-#define LIGHT_WHITE          40  /* 白色の光センサ値 */
-#define LIGHT_BLACK           0  /* 黒色の光センサ値 */
 #define TAIL_ANGLE_STAND_UP  93  /* 完全停止時の角度[度] */
 #define TAIL_ANGLE_DRIVE      3  /* バランス走行時の角度[度] */
 #define CMD_START         '1'    /* リモートスタートコマンド */
@@ -83,11 +81,10 @@ void main_task(intptr_t unused) {
 
 	gCompetitionrunning = new CompetitionRunning(gDeviceInterface, gUiGet);
 
-	gCalibrationController = new CalibrationController(gDeviceInterface,
-			gUiGet);
+	gCalibrationController = new CalibrationController(gDeviceInterface, gUiGet);
 
-	gExtraStageLookUp = new ExtraStageLookUp(gDeviceInterface);
-	gExtraStageStep = new ExtraStageStep(gDeviceInterface, gUiGet);
+	gExtraStageLookUp = new ExtraStageLookUp( gDeviceInterface, gUiGet, gCalibrationController );
+	gExtraStageStep = new ExtraStageStep(gDeviceInterface, gUiGet, gCalibrationController);
 
 	/* LCD画面表示 */
 	ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
@@ -113,10 +110,7 @@ void main_task(intptr_t unused) {
 	 */
 
 	/*競技走行*/
-	//gCompetitionrunning->CompetitionRun();
-
-
-
+	gCompetitionrunning->CompetitionRun();
 
 	// Lコース
 	if (gCourse == 1) {
@@ -128,7 +122,6 @@ void main_task(intptr_t unused) {
 	else if (gCourse == 2) {
 		// 階段
 		gExtraStageStep->ExtraRun();
-
 		//ガレージ
 	}
 

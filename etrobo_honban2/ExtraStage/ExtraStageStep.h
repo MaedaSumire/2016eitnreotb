@@ -11,7 +11,7 @@
 class ExtraStageStep {
 public:
 
-	ExtraStageStep(DeviceInterface* deviceinterface, UIGet* UiGet);
+	ExtraStageStep(DeviceInterface* deviceinterface, UIGet* UiGet, CalibrationController* gCalibrationController);
 	void ExtraRun();
 
 private:
@@ -21,6 +21,7 @@ private:
 	MotorDrive*			m_pMotorDrive;
 	RunningCalculation* m_pRunningCalculation;
 	UIGet*				m_pUIGet;
+	CalibrationController*	m_pCalibrationController;
 
 };
 
