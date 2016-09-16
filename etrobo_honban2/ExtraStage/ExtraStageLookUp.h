@@ -10,6 +10,8 @@
 #include "PIDCalculation.h"
 #include "balancer.h"
 #include "RunningData.h"
+#include "RunningCalculation.h"
+
 
 
 class ExtraStageLookUp {
@@ -28,50 +30,50 @@ private:
 	DeviceInterface* 	m_pDeviceInterface;
 	UIGet*				m_pUIGet;
 	CalibrationController*	m_pCalibrationController;
-
+	RunningCalculation* m_pRunningCalculation;
 	DeviceValueGet*		m_pDeviceValueGet;
 	MotorDrive*			m_pMotorDrive;
 
 	PIDCalculation		mPIDCalculation;
 
-	uint32_t			m_uStartTime;	// ŠJnŠÔ
-	uint32_t			m_uNowTime;		// Œ»İŠÔ
-	uint32_t			m_uElapsedTime; // Œo‰ßŠÔ
+	uint32_t			m_uStartTime;	// ï¿½Jï¿½nï¿½ï¿½ï¿½ï¿½
+	uint32_t			m_uNowTime;		// ï¿½ï¿½ï¿½İï¿½ï¿½ï¿½
+	uint32_t			m_uElapsedTime; // ï¿½oï¿½ßï¿½ï¿½ï¿½
 
-	float	m_fTailAngleStand;	// ‚µ‚Á‚Û—§‚¿ã‚ª‚è
-	float	m_fTailAngleStandLow;	// ‚µ‚Á‚Û—§‚¿ã‚ª‚è
-	float	m_fTailAngleStandFine;	// ‚µ‚Á‚Û—§‚¿ã‚ª‚è
-
-
-	float	m_fTailAngleSlant;	// ‚µ‚Á‚ÛƒŠƒ“ƒ{[
-	int16_t	m_nDistanceMin;		// ƒ\ƒi[ƒZƒ“ƒT[‹——£cm
+	float	m_fTailAngleStand;	// ï¿½ï¿½ï¿½ï¿½ï¿½Û—ï¿½ï¿½ï¿½ï¿½ã‚ªï¿½ï¿½
+	float	m_fTailAngleStandLow;	// ï¿½ï¿½ï¿½ï¿½ï¿½Û—ï¿½ï¿½ï¿½ï¿½ã‚ªï¿½ï¿½
+	float	m_fTailAngleStandFine;	// ï¿½ï¿½ï¿½ï¿½ï¿½Û—ï¿½ï¿½ï¿½ï¿½ã‚ªï¿½ï¿½
 
 
+	float	m_fTailAngleSlant;	// ï¿½ï¿½ï¿½ï¿½ï¿½Ûƒï¿½ï¿½ï¿½ï¿½{ï¿½[
+	int16_t	m_nDistanceMin;		// ï¿½\ï¿½iï¿½[ï¿½Zï¿½ï¿½ï¿½Tï¿½[ï¿½ï¿½ï¿½ï¿½cm
 
-	// ƒQ[ƒg‚És‚­
+
+
+	// ï¿½Qï¿½[ï¿½gï¿½Ésï¿½ï¿½
 	void GoGate(
 				char	cLRsw,
 				float	fTailAngle
 			);
 
-	//‘–s‘Ì‚ğƒŠƒ“ƒ{[
+	//ï¿½ï¿½ï¿½sï¿½Ì‚ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½{ï¿½[
 	float Limbo(
 			char	cLRsw,
 			float	fTailAngle
 			);
 
-	// ‚µ‚Á‚Û‚ğ—§‚Ä‚é
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Û‚ğ—§‚Ä‚ï¿½
 	float	StandUpTail(
 			float	fTailAngle
 			);
 
-	// ‚µ‚Á‚Û‚ğ—§‚Ä‚é
+	// ï¿½ï¿½ï¿½ï¿½ï¿½Û‚ğ—§‚Ä‚ï¿½
 	float	StandUpTailFine(
 			float	fTailAngle
 			);
 
 
-	// w’è‹——£ˆÚ“®
+	// ï¿½wï¿½è‹—ï¿½ï¿½ï¿½Ú“ï¿½
 	void MoveDist(
 			char	cLRsw,
 			int		nDist,
@@ -79,39 +81,39 @@ private:
 			int		nForward
 			);
 
-	// ƒXƒsƒ“
+	// ï¿½Xï¿½sï¿½ï¿½
 	void Spin(
 			int nAng,
 			float	fTailAngle
 			);
 
-	// ƒ|[ƒY
+	// ï¿½|ï¿½[ï¿½Y
 	void PauseEt(
 			int		nTime,
 			float	fTailAngle
 			);
 
-	// Œo‰ßŠÔæ“¾
-	// m_uNowTime ‚Æ m_uElapsedTime‚ğİ’è
+	// ï¿½oï¿½ßï¿½ï¿½Ôæ“¾
+	// m_uNowTime ï¿½ï¿½ m_uElapsedTimeï¿½ï¿½İ’ï¿½
 	uint32_t	GetElapsedTime();
 
-	// ƒIƒtƒZƒbƒg•t‚«ŠpˆÊ’u‚©‚ç‹——£‚É•ÏŠ·
+	// ï¿½Iï¿½tï¿½Zï¿½bï¿½gï¿½tï¿½ï¿½ï¿½pï¿½Ê’uï¿½ï¿½ï¿½ç‹—ï¿½ï¿½ï¿½É•ÏŠï¿½
 	double	GetRunDistance(
 			double	dMotorCount
 			);
 
-	// ƒL[ƒ{[ƒh“ü—Í‚É‚æ‚éƒuƒŒƒCƒNw¦
+	// ï¿½Lï¿½[ï¿½{ï¿½[ï¿½hï¿½ï¿½ï¿½Í‚É‚ï¿½ï¿½uï¿½ï¿½ï¿½Cï¿½Nï¿½wï¿½ï¿½
 	bool	IsKeyBreak(
 			float	fTailAngle
 			);
 
-	// ƒgƒŒ[ƒXŒvZ‚·‚é
+	// ï¿½gï¿½ï¿½ï¿½[ï¿½Xï¿½vï¿½Zï¿½ï¿½ï¿½ï¿½
 	DV		CalcuTraceMoterPower(
 			char	cLRsw,
 			int		nForward
 			);
 
-	// ƒGƒ“ƒfƒBƒ“ƒO
+	// ï¿½Gï¿½ï¿½ï¿½fï¿½Bï¿½ï¿½ï¿½O
 	void	Ending();
 
 };

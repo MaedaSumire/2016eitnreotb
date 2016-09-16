@@ -11,6 +11,7 @@ ExtraStageLookUp::ExtraStageLookUp(
 	m_pDeviceInterface	= deviceinterface;
 	m_pUIGet			= guiget;
 	m_pCalibrationController	= gCalibrationController;
+	m_pRunningCalculation = new RunningCalculation();
 
 	m_pDeviceValueGet	= new	DeviceValueGet(deviceinterface);
 	m_pMotorDrive = new MotorDrive(deviceinterface);
@@ -32,13 +33,43 @@ ExtraStageLookUp::ExtraStageLookUp(
 	m_fTailAngleStandLow	+= fTailSabun;	// しっぽ立ち上がり低め
 	m_fTailAngleStandFine	+= fTailSabun;	// しっぽ立ち上がり最終値（ガレージ）
 	m_fTailAngleSlant		+= fTailSabun;	// しっぽリンボー
-
 }
+
+extern int gCourse;
+
 
 
 //メソッド：void 競技走行する（）
 void ExtraStageLookUp::ExtraRun()
 {
+	gCourse = 4;
+
+	/*　停止部分 */
+	int stopTime = m_pDeviceInterface->m_pCClock->now();
+	DV dv_now;
+	while(1){
+		dv_now = m_pDeviceValueGet->DeviceValueGetter();
+		if(m_pDeviceInterface->m_pCClock->now() - stopTime  < 1500){
+			dv_now = m_pRunningCalculation->RunningCalculate(dv_now, 0);
+			m_pMotorDrive->TailMotorDrive(3);
+			ev3_lcd_draw_string("EXrun section0start", 0, 70);
+		}
+		else if(m_pDeviceInterface->m_pCClock->now() - stopTime  < 2000){
+			dv_now.GYRO_OFFSET = -10;
+			dv_now = m_pRunningCalculation->RunningCalculate(dv_now, 0);
+			m_pMotorDrive->TailMotorDrive(80);
+			ev3_lcd_draw_string("EXrun section0 < 3500", 0, 80);
+		}
+		else{
+			break;
+		}
+
+		m_pMotorDrive->LRMotorDrive(dv_now.Lmotor_pwm, dv_now.Rmotor_pwm);
+		m_pDeviceInterface->m_pCClock->sleep(3); /* 4msec周期起動 */
+	}
+
+	ev3_lcd_draw_string("EXrun fin", 0, 90);
+
 	//
 	float	fTailAngle = m_fTailAngleStand;	// しっぽ立ち上がり
 

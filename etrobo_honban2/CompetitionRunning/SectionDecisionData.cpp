@@ -13,7 +13,7 @@ SDD SectionDecisionData::referData(int now_section){
 	SDD sdd;
 
 	if(gCourse == 1){//Lコースだったら
-		double mD[7] = 	{100.0,	3300.0,	0.0,	6400.0,	0.0,	8700.0,	12000.0};
+		double mD[7] = 	{10.0,	3300.0,	0.0,	6400.0,	0.0,	8700.0,	11900.0};
 		double mTA[7] = {10.0,	0.0,	730.0,	0.0,	390.0,	0.0,	0.0};
 		sdd.Distance = mD[now_section];
 		sdd.TurningAmount = mTA[now_section];
