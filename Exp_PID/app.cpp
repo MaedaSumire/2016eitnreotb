@@ -34,7 +34,7 @@ static FILE *bt = NULL; /* Bluetoothファイルハンドル */
 
 /* 下記のマクロは個体/環境に合わせて変更する必要があります */
 #define GYRO_OFFSET           0  /* ジャイロセンサオフセット値(角速度0[deg/sec]時) */
-#define LIGHT_WHITE          42  /* 白色の光センサ値 */
+#define LIGHT_WHITE          22  /* 白色の光センサ値 */
 #define LIGHT_BLACK           2  /* 黒色の光センサ値 */
 #define SONAR_ALERT_DISTANCE 30  /* 超音波センサによる障害物検知距離[cm] */
 #define TAIL_ANGLE_STAND_UP  93  /* 完全停止時の角度[度] */
@@ -166,13 +166,13 @@ void main_task(intptr_t unused) {
 		if (ev3_button_is_pressed(BACK_BUTTON))
 			break;
 
-		tail_control(TAIL_ANGLE_DRIVE); /* バランス走行用角度に制御 */
+		tail_control(75); /* バランス走行用角度に制御 */
 
 		if (sonar_alert() == 1) /* 障害物検知 */
 		{
 			forward = turn = 0; /* 障害物を検知したら停止 */
 		} else {
-			forward = 30; /* 前進命令 */
+			forward = 10; /* 前進命令 */
 			g_unBrightness  = colorSensor->getBrightness();
 			nBri = ((LIGHT_WHITE - LIGHT_BLACK)/ 2)*1.1;
 
@@ -215,7 +215,7 @@ void main_task(intptr_t unused) {
 		/* 倒立振子制御APIを呼び出し、倒立走行するための */
 		/* 左右モータ出力値を得る */
 		balance_control((float) forward, (float) turn, (float) g_gyro,
-				(float) GYRO_OFFSET, (float) g_motor_ang_l,
+				(float) 10, (float) g_motor_ang_l,
 				(float) g_motor_ang_r, (float) g_volt, (int8_t *) &pwm_L,
 				(int8_t *) &pwm_R);
 

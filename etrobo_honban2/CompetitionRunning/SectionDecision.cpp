@@ -23,9 +23,7 @@ bool SectionDecision::SwitchingDecision(DV dv, int now_section) {
 		switch (now_section) {
 		// 区間1(スタート区間)
 		case 0:
-			if (dv.Lmotor_angle > sdd.Distance) {
-				result = true;
-			}
+			result = true;
 			break;
 			// 区間2
 		case 1:
