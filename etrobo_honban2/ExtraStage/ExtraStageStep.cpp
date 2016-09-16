@@ -97,7 +97,7 @@ void ExtraStageStep::ExtraRun() {
 			else if (m_pDeviceInterface->m_pCClock->now() - tempTime > 1000) {
 				// 前に進みすぎたら後ろに下がる
 				// 特定位置より後ろに位置していたら前に進むロジックがあるとよりセーフティ
-				if (dv_now.Rmotor_angle - tempRmotor > 300) {
+				if (dv_now.Rmotor_angle - tempRmotor > 250) {
 					dv_now.Lmotor_pwm = -3;
 					dv_now.Rmotor_pwm = -3;
 				} else { //位置調整できたら区間を切り替える
