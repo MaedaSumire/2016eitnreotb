@@ -17,6 +17,7 @@ typedef struct{		// 補正値構造体
 	int8_t	Black;	// 輝度　黒
 	int8_t	Half;	// 輝度　中間値
 	float	TailAngleStandUp;	// 直立時尻尾角度
+	char	Running;	// 'c' : Conpetition & ExtraStage, 'x' ExtraStage Only
 } CALIBRAT ;
 
 class CalibrationController {

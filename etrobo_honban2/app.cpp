@@ -99,6 +99,8 @@ void main_task(intptr_t unused) {
 	/*キャリブレーション＆スタート待機*/
 	gCalibrationController->Calibrate();
 
+	CALIBRAT	calib	= 	gCalibrationController->GetValue();
+
 	/* 再度初期化 */
 	gDeviceInterface->m_pCLeftMotor->reset();
 	gDeviceInterface->m_pCRightMotor->reset();
@@ -110,7 +112,13 @@ void main_task(intptr_t unused) {
 	 */
 
 	/*競技走行*/
+//	gCompetitionrunning->CompetitionRun();
+	if( calib.Running == 'c' || calib.Running == 'C' ){
+		// 競技走行
+		gCompetitionrunning->CompetitionRun();
+	}
 	//gCompetitionrunning->CompetitionRun();
+
 
 	// Lコース
 	if (gCourse == 1) {
