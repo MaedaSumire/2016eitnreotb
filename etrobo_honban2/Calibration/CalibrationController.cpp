@@ -15,6 +15,8 @@ CalibrationController::CalibrationController(
 	mCalibrat.Black	= 1;	// 補正値 初期値
 	mCalibrat.Half	= 22;	// 補正値 初期値
 	mCalibrat.TailAngleStandUp	= 93.0;	// 直立時尻尾角度
+
+	mCalibrat.Running	= 'c';	// 'c' : Conpetition & ExtraStage, 'x' ExtraStage Only
 }
 
 CalibrationController::~CalibrationController()
@@ -69,6 +71,12 @@ void CalibrationController::Calibrate(){
 				mCalibrat.Black	= dv.color;
 			}else if( ui.btcKey == 'h' || ui.btcKey == 'H' ){	// 中間値
 				mCalibrat.Half	= dv.color;
+
+			}else if( ui.btcKey == 'c' || ui.btcKey == 'C' ){	// Conpetition & ExtraStage
+				mCalibrat.Running	= 'c';
+			}else if( ui.btcKey == 'x' || ui.btcKey == 'X' ){	// ExtraStage Only
+				mCalibrat.Running	= 'x';
+
 			}
 			Disp();
 		}
@@ -121,13 +129,16 @@ void	CalibrationController::Disp()
 
 	DV	dv	= m_pDeviceValueGet->DeviceValueGetter();		// デバイス値取得
 
+	sprintf(sbuff,"---------------------------\n");
+	fputs( sbuff, pBt->pBtFile); 		// エコーバック
+
 	// コース
 	if(gCourse == 1){
 		sprintf(sbuff,"L Course\n");
 	}else if(gCourse == 2){
 		sprintf(sbuff,"R Course\n");
 	}else{
-		sprintf(sbuff,"Non Course !!!!!!\n");
+		sprintf(sbuff,"!!!!!! Non Course !!!!!!\n");
 	}
 	fputs( sbuff, pBt->pBtFile); 		// エコーバック
 	fputc('\n', pBt->pBtFile);
@@ -148,6 +159,14 @@ void	CalibrationController::Disp()
 	fputs( sbuff, pBt->pBtFile); 		// エコーバック
 	sprintf(sbuff,"h : Half  =%d\n", mCalibrat.Half);
 	fputs( sbuff, pBt->pBtFile); 		// エコーバック
+
+	fputc('\n', pBt->pBtFile);
+	sprintf(sbuff,"c : Conpetition & ExtraStage, x ExtraStage Only=[%c]\n", mCalibrat.Running);
+	fputs( sbuff, pBt->pBtFile); 		// エコーバック
+	if( mCalibrat.Running != 'c' ){
+		sprintf(sbuff,"!!!!!! Not Conpetition & ExtraStage !!!!!! please press [c] key!\n");
+	}
+
 }
 
 

@@ -10,9 +10,8 @@
 #include "PIDCalculation.h"
 #include "balancer.h"
 #include "RunningData.h"
+
 #include "RunningCalculation.h"
-
-
 
 class ExtraStageLookUp {
 public:
@@ -30,50 +29,52 @@ private:
 	DeviceInterface* 	m_pDeviceInterface;
 	UIGet*				m_pUIGet;
 	CalibrationController*	m_pCalibrationController;
+
 	RunningCalculation* m_pRunningCalculation;
+
 	DeviceValueGet*		m_pDeviceValueGet;
 	MotorDrive*			m_pMotorDrive;
 
 	PIDCalculation		mPIDCalculation;
 
-	uint32_t			m_uStartTime;	// �J�n����
-	uint32_t			m_uNowTime;		// ���ݎ���
-	uint32_t			m_uElapsedTime; // �o�ߎ���
+	uint32_t			m_uStartTime;	// 開始時間
+	uint32_t			m_uNowTime;		// 現在時間
+	uint32_t			m_uElapsedTime; // 経過時間
 
-	float	m_fTailAngleStand;	// �����ۗ����オ��
-	float	m_fTailAngleStandLow;	// �����ۗ����オ��
-	float	m_fTailAngleStandFine;	// �����ۗ����オ��
-
-
-	float	m_fTailAngleSlant;	// �����ۃ����{�[
-	int16_t	m_nDistanceMin;		// �\�i�[�Z���T�[����cm
+	float	m_fTailAngleStand;	// しっぽ立ち上がり
+	float	m_fTailAngleStand2;	// しっぽ立ち上がり
+	float	m_fTailAngleStandLow;	// しっぽ立ち上がり
+	float	m_fTailAngleStandFine;	// しっぽ立ち上がり
 
 
+	float	m_fTailAngleSlant;	// しっぽリンボー
+	int16_t	m_nDistanceMin;		// ソナーセンサー距離cm
+	int		m_nFinalRunDist;	// ガレージまでの最終走行距離
 
-	// �Q�[�g�ɍs��
+	// ゲートに行く
 	void GoGate(
 				char	cLRsw,
 				float	fTailAngle
 			);
 
-	//���s�̂������{�[
+	//走行体をリンボー
 	float Limbo(
 			char	cLRsw,
 			float	fTailAngle
 			);
 
-	// �����ۂ𗧂Ă�
+	// しっぽを立てる
 	float	StandUpTail(
 			float	fTailAngle
 			);
 
-	// �����ۂ𗧂Ă�
+	// しっぽを立てる
 	float	StandUpTailFine(
 			float	fTailAngle
 			);
 
 
-	// �w�苗���ړ�
+	// 指定距離移動
 	void MoveDist(
 			char	cLRsw,
 			int		nDist,
@@ -81,39 +82,39 @@ private:
 			int		nForward
 			);
 
-	// �X�s��
+	// スピン
 	void Spin(
 			int nAng,
 			float	fTailAngle
 			);
 
-	// �|�[�Y
+	// ポーズ
 	void PauseEt(
 			int		nTime,
 			float	fTailAngle
 			);
 
-	// �o�ߎ��Ԏ擾
-	// m_uNowTime �� m_uElapsedTime��ݒ�
+	// 経過時間取得
+	// m_uNowTime と m_uElapsedTimeを設定
 	uint32_t	GetElapsedTime();
 
-	// �I�t�Z�b�g�t���p�ʒu���狗���ɕϊ�
+	// オフセット付き角位置から距離に変換
 	double	GetRunDistance(
 			double	dMotorCount
 			);
 
-	// �L�[�{�[�h���͂ɂ��u���C�N�w��
+	// キーボード入力によるブレイク指示
 	bool	IsKeyBreak(
 			float	fTailAngle
 			);
 
-	// �g���[�X�v�Z����
+	// トレース計算する
 	DV		CalcuTraceMoterPower(
 			char	cLRsw,
 			int		nForward
 			);
 
-	// �G���f�B���O
+	// エンディング
 	void	Ending();
 
 };

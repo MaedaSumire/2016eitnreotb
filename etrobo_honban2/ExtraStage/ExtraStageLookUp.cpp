@@ -11,38 +11,47 @@ ExtraStageLookUp::ExtraStageLookUp(
 	m_pDeviceInterface	= deviceinterface;
 	m_pUIGet			= guiget;
 	m_pCalibrationController	= gCalibrationController;
+
 	m_pRunningCalculation = new RunningCalculation();
 
 	m_pDeviceValueGet	= new	DeviceValueGet(deviceinterface);
 	m_pMotorDrive = new MotorDrive(deviceinterface);
 
 	m_uStartTime	= 0;	// 開始時間
+	m_uNowTime		= 0;	// 現在時間
+	m_uElapsedTime	= 0; 	// 経過時間
 
-	m_fTailAngleStand = 82;	// しっぽ立ち上がり
-	m_fTailAngleStandLow = 75;	// しっぽ立ち上がり低め
-	m_fTailAngleStandFine = 85;	// しっぽ立ち上がり最終値（ガレージ）
+	m_fTailAngleStand = 84;	// しっぽ立ち上がり
+	m_fTailAngleStand2 = 80;	// しっぽ立ち上がり
+	m_fTailAngleStandLow = 74;	// しっぽ立ち上がり低め
+	m_fTailAngleStandFine = 87;	// しっぽ立ち上がり最終値（ガレージ）
 
-	m_fTailAngleSlant = 58;	// しっぽリンボー
+	m_fTailAngleSlant = 60;	// しっぽリンボー
 
 	m_nDistanceMin 	= 5;	// ソナーセンサー距離cm
+
+	//■■■■■■■■■■■■■■■■■■■■■　＜最終調整が必要＞　■■■
+	m_nFinalRunDist	= 400;	// ガレージまでの最終走行距離
+	float	fTailCal	= -2;	// しっぽ初期調整
+
+	//場合によっては、SectionDecisionData::referData() の値も変更する　「最終コーナー長さ」
+	//■■■■■■■■■■■■■■■■■■■■■
 
 	// しっぽ角度キャリブレーション
 	CALIBRAT calib	= m_pCalibrationController->GetValue();
 	float	fTailSabun	= calib.TailAngleStandUp - 93.0;
+	fTailSabun	+= fTailCal;
 	m_fTailAngleStand		+= fTailSabun;	// しっぽ立ち上がり
 	m_fTailAngleStandLow	+= fTailSabun;	// しっぽ立ち上がり低め
 	m_fTailAngleStandFine	+= fTailSabun;	// しっぽ立ち上がり最終値（ガレージ）
 	m_fTailAngleSlant		+= fTailSabun;	// しっぽリンボー
+
 }
-
-extern int gCourse;
-
 
 
 //メソッド：void 競技走行する（）
 void ExtraStageLookUp::ExtraRun()
 {
-	gCourse = 4;
 
 	/*　停止部分 */
 	int stopTime = m_pDeviceInterface->m_pCClock->now();
@@ -70,6 +79,8 @@ void ExtraStageLookUp::ExtraRun()
 
 	ev3_lcd_draw_string("EXrun fin", 0, 90);
 
+
+
 	//
 	float	fTailAngle = m_fTailAngleStand;	// しっぽ立ち上がり
 
@@ -89,24 +100,27 @@ void ExtraStageLookUp::ExtraRun()
 	m_pUIGet->WriteLog(cLogBuff);
 
 
-
-
 //BBBBBBBBBBB
-//	Spin(3600, fTailAngle);
+// テストデータ取得
+//	Spin( 'N', 3600, fTailAngle );
 //
-//	PauseEt(3000, fTailAngle);	// ポーズ
+//	PauseEt( 3000, fTailAngle);	// ポーズ
 //
 //	// 5000mm 進む
-//	MoveDist( 5000, fTailAngle, nLmotor, nRmotor );
+//	MoveDist( 'N', 5000, fTailAngle, nLmotor, nRmotor );
 //	PauseEt(3000, fTailAngle);	// ポーズ
 //BBBBBBBBBBB
 
-	PauseEt(500, fTailAngle);	// ポーズ
+//	PauseEt(500, fTailAngle);	// ポーズ
+
+//	// ０　しっぽを出しながら止まる
+//	MoveDist( 'N', 100, fTailAngle, 5 );
 
 	// ①　→
 
 	//ゲートまで近づく
-	GoGate('R', fTailAngle);
+//	GoGate('R', fTailAngle);
+	GoGate('N', fTailAngle);
 	PauseEt(500, fTailAngle);	// ポーズ
 
 	// ②　→
@@ -115,72 +129,67 @@ void ExtraStageLookUp::ExtraRun()
 	fTailAngle	= Limbo( 'N', fTailAngle);
 	PauseEt(500, fTailAngle);	// ポーズ
 
-	// ゲートを潜る為、300mm 進む
-	MoveDist( 'N', 300, fTailAngle, 10 );
+	// ゲートを潜る為、230mm 進む
+	MoveDist( 'N', 230, fTailAngle, 10 );
 	PauseEt(500, fTailAngle);	// ポーズ
 
-	//BBBBB
-//	fTailAngle = StandUpTail(fTailAngle);	// しっぽを立てる
-//	PauseEt(500, fTailAngle);	// ポーズ
-	//BBBBB
-
-
-	// ③ U
-
+	// ③ Ｕ
 	// Ｕターン　180度回転
 	Spin(185, fTailAngle);
 	PauseEt(500, fTailAngle);	// ポーズ
 
-
 	// 戻り
-/*
-	//ゲートまで戻る
-	GoGate( 'N', fTailAngle);
-	PauseEt(500, fTailAngle);	// ポーズ
-
-	//走行体をリンボー
-	fTailAngle	= Limbo( 'N', fTailAngle);
-	PauseEt(500, fTailAngle);	// ポーズ
-*/
-
 	// ③　←
-
-	// ゲートを潜る、420mm 進む
-	MoveDist( 'N', 420, fTailAngle, 10 );
+	// ゲートを潜る、330mm 戻る
+	MoveDist( 'N', 330, fTailAngle, 10 );
 	PauseEt(500, fTailAngle);	// ポーズ
-
 
 	// ④　Ｕ
 	// 再度Ｕターン　-180度回転
 	Spin(-185, fTailAngle);
 	PauseEt(500, fTailAngle);	// ポーズ
 
-/*
-	//ゲートまで近づく
-	GoGate( 'N', fTailAngle);
-	PauseEt(500, fTailAngle);	// ポーズ
-
-	//走行体をリンボー
-	fTailAngle	= Limbo( 'N', fTailAngle);
-*/
-
 	// ④　→
-	// ガレージまで走る！！
-	// 距離　860mm
+	// ゲートを潜る、360mm 進む
+	MoveDist( 'N', 360, fTailAngle, 20 );
 
-//	fTailAngle	= m_fTailAngleStand;
 
-	MoveDist( 'N', 400, fTailAngle, 10 );
-
+	// ⑤　→
+	// トレースを可能とする為に上体を起こす
 	fTailAngle = StandUpTail(fTailAngle);	// しっぽを立てる
 
-	MoveDist( 'N', 400, fTailAngle, 10 );
+	PauseEt(2222, fTailAngle);	// ポーズ
 
-	MoveDist( 'N', 60, fTailAngle,  5 );	// 急停止すると倒れる場合があるので減速走行
+	PauseEt(2222, fTailAngle);	// ポーズ
 
+//
+//	// トレースを確実に行う為に故意に右側にはみ出す
+//	Spin(-10, fTailAngle);		// -10度回転
+//	PauseEt(500, fTailAngle);	// ポーズ
+//	MoveDist( 'N', 40, fTailAngle, 10 );	// 3cm進む
+//	PauseEt(500, fTailAngle);	// ポーズ
+
+	// ⑥　→
+	// ガレージまで走る！！
+	// 距離　m_nFinalRunDist	// ■■＜最終調整が必要＞
+
+	// トレース走行
+//	MoveDist( 'R', m_nFinalRunDist, fTailAngle, 10 );
+	MoveDist( 'N', m_nFinalRunDist, fTailAngle, 10 );
+
+	MoveDist( 'N', 50, fTailAngle,  5 );	// 急停止すると倒れる場合があるので減速走行
+
+	// ゲートイン
 	fTailAngle = StandUpTailFine(fTailAngle);	// しっぽを思い切り立てる
+	PauseEt(4000, fTailAngle);	// ポーズ
 
-	PauseEt(50, fTailAngle);	// ポーズ
+	// ゲートに届かなかった場合を考慮して、微速前進とポーズを繰り返す
+	// ※ゲートイン判定が出た後は、ゲートにぶつかってもお構いなしなはず
+	for( int i=0 ; i< 5 ; i++ ){
+		MoveDist( 'N', 30, fTailAngle,  5 );	// ゲートまで再度トライ
+		PauseEt(4000, fTailAngle);	// ポーズ
+	}
+	MoveDist( 'N', 30, fTailAngle,  5 );	// ゲートまで再度トライ
 
 //	Ending();
 
@@ -197,8 +206,11 @@ void ExtraStageLookUp::GoGate(
 	//-----ログ出力-----
 	char*	cLogBuff	= m_pUIGet->GetBlueT()->pcLogBuff;
 	//------------------
+	DV	dv;
+	int		nForward	= 10;	// 走行速度
 
-	int16_t	nDistanceMin = 5;	// ソナーセンサー距離cm
+//	int16_t	nDistanceMin = 5;	// ソナーセンサー距離cm
+	int16_t	nDistanceMin = 7;	// ソナーセンサー距離cm
 
 	int16_t nDistance	= m_pDeviceInterface->m_pCSonarSensor->getDistance();
 
@@ -207,21 +219,33 @@ void ExtraStageLookUp::GoGate(
 			// 40ミリ秒毎にソナー検出
 			nDistance	=  m_pDeviceInterface->m_pCSonarSensor->getDistance();
 		}
-		//ログ出力
-		sprintf(cLogBuff,"ExtraRun GoGate %lu, nDistance=%d\n", GetElapsedTime(),
-				nDistance);
-		m_pUIGet->WriteLog(cLogBuff);
 
 		if( nDistance <= nDistanceMin ){
+			// ゲート前に到着
+			//ログ出力
+			sprintf(cLogBuff,"ExtraRun GoGate %lu, nDistance=%d\n", GetElapsedTime(), nDistance);
+			m_pUIGet->WriteLog(cLogBuff);
 			break;
 		}
 
 		// ライントレース制御
-		DV	dv	= CalcuTraceMoterPower( cLRsw, 10 );
+		dv	= CalcuTraceMoterPower( cLRsw, nForward );
 
 		// モータードライブ
 		m_pMotorDrive->TailMotorDrive(fTailAngle);
 		m_pMotorDrive->LRMotorDrive(dv.Lmotor_pwm, dv.Rmotor_pwm);
+
+		//ログ出力
+		sprintf(cLogBuff,"ExtraRun GoGate %lu, cLRsw=[%c], nDistance=%d,  fTailAngle=%f, nForward=%d, color=%d, Lmotor_pwm=%d, Rmotor_pwm=%d\n",
+				GetElapsedTime(),
+				cLRsw,
+				nDistance,
+				fTailAngle,
+				nForward,
+				dv.color,
+				dv.Lmotor_pwm, dv.Rmotor_pwm
+		);
+		m_pUIGet->WriteLog(cLogBuff);
 
 		m_pDeviceInterface->m_pCClock->sleep(4); // 4msec周期起動
 		if( IsKeyBreak(fTailAngle) )	break;
@@ -256,65 +280,15 @@ float ExtraStageLookUp::Limbo(
 				break;		// キーボード入力による強制ブレイク
 			}
 		}else{
+			// 上体倒し終了
 			m_pMotorDrive->TailMotorDrive(fTailAngleO);
 			break;
 		}
 	}
 
 	//ログ出力
-	sprintf(cLogBuff,"ExtraRun Limbo %lu, fTailAngle=%f\n", GetElapsedTime(),
-		fTailAngleO
-		);
+	sprintf(cLogBuff,"ExtraRun Limbo %lu, fTailAngle=%f\n", GetElapsedTime(), fTailAngleO );
 	m_pUIGet->WriteLog(cLogBuff);
-
-/*
-	int	nForward = 10;
-
-	// ゲートを潜る為、250mm 進む
-	MoveDist( cLRsw, 250, fTailAngleO, nForward );
-	PauseEt(500, fTailAngleO);	// ポーズ
-*/
-
-/*
-
-	// 上体を起こす。しっぽを下げる
-	// ※上体が倒れたままだと、重心がしっぽに掛かり、タイヤ荷重が少なくスリップしてしまう。
-	//   また、しっぽ接地抵抗が大きくスピンできない。
-	while(1){
-		if( fTailAngleO < m_fTailAngleStand ){
-			// しっぽを徐々に下げる（一気にやると倒れてしまう）
-			// 微前進->微後退 により揺り動かす。（テールモーターパワーだけでは起き上がれないので）
-
-			m_pMotorDrive->TailMotorDrive(fTailAngleO);
-			m_pMotorDrive->LRMotorDrive( 10, 10 );			// 微前進
-			m_pDeviceInterface->m_pCClock->sleep(4); // 4msec周期起動
-
-			m_pMotorDrive->TailMotorDrive(fTailAngleO);
-			m_pMotorDrive->LRMotorDrive( 10, 10 );			// 微前進
-			m_pDeviceInterface->m_pCClock->sleep(4); // 4msec周期起動
-
-
-			m_pMotorDrive->TailMotorDrive(fTailAngleO);
-			m_pMotorDrive->LRMotorDrive( -10, -10 );			// 微後退
-			m_pDeviceInterface->m_pCClock->sleep(4); // 4msec周期起動
-
-			m_pMotorDrive->TailMotorDrive(fTailAngleO);
-			m_pMotorDrive->LRMotorDrive( -10, -10 );			// 微後退
-
-
-			fTailAngleO	+= ( 0.02 );
-			m_pDeviceInterface->m_pCClock->sleep(4); // 4msec周期起動
-
-			if( IsKeyBreak(fTailAngleO) ){
-				//fTailAngle	= fTailAngleS;
-				break;		// キーボード入力による強制ブレイク
-			}
-		}else{
-			m_pMotorDrive->TailMotorDrive(fTailAngleO);
-			break;
-		}
-	}
-*/
 
 	return	fTailAngleO;
 }
@@ -326,55 +300,26 @@ float	ExtraStageLookUp::StandUpTail(
 {
 	float	fTailAngleO	= fTailAngle;
 
-/*
 	// 上体を起こす。しっぽを下げる
-	// ※上体が倒れたままだと、重心がしっぽに掛かり、タイヤ荷重が少なくスリップしてしまう。
-	//   また、しっぽ接地抵抗が大きくスピンできない。
-	while(1){
-		if( fTailAngleO < m_fTailAngleStand ){
-			// しっぽを徐々に下げる（一気にやると倒れてしまう）
-			// 微前進->微後退 により揺り動かす。（テールモーターパワーだけでは起き上がれないので）
+	// ※上体が倒れたままだと、
+	//   ・カラーセンサーが傾きライントレースができない
+	//   ・重心がしっぽに掛かり、タイヤ荷重が少なくスリップしてしまう。
+	//   ・しっぽ接地抵抗が大きく走行に支障が出る可能性が高い。
 
-			m_pMotorDrive->TailMotorDrive(fTailAngleO);
-			m_pMotorDrive->LRMotorDrive( 10, 10 );			// 微前進
-			m_pDeviceInterface->m_pCClock->sleep(4); // 4msec周期起動
 
-			m_pMotorDrive->TailMotorDrive(fTailAngleO);
-			m_pMotorDrive->LRMotorDrive( 10, 10 );			// 微前進
-			m_pDeviceInterface->m_pCClock->sleep(4); // 4msec周期起動
-
-			fTailAngleO	+= ( 0.01 );
-
-			m_pMotorDrive->TailMotorDrive(fTailAngleO);
-			m_pMotorDrive->LRMotorDrive( -10, -10 );			// 微後退
-			m_pDeviceInterface->m_pCClock->sleep(4); // 4msec周期起動
-
-			m_pMotorDrive->TailMotorDrive(fTailAngleO);
-			m_pMotorDrive->LRMotorDrive( -10, -10 );			// 微後退
-
-			fTailAngleO	+= ( 0.01 );
-			m_pDeviceInterface->m_pCClock->sleep(4); // 4msec周期起動
-
-			if( IsKeyBreak(fTailAngleO) ){
-				//fTailAngle	= fTailAngleS;
-				break;		// キーボード入力による強制ブレイク
-			}
-		}else{
-			m_pMotorDrive->TailMotorDrive(fTailAngleO);
-			break;
-		}
-	}
-*/
-
-//	int	turn	= 0;
-//	int	forward	= -100;
-
+	// 上体を中間まで起こす
+	// いっきに起こすと前に倒れることがある
 	while(1){
 		if( fTailAngleO >= m_fTailAngleStandLow )	break;
 
-		fTailAngleO	+= ( 0.2 );
+		fTailAngleO	+= ( 0.4 );
 		m_pMotorDrive->TailMotorDrive(fTailAngle);
 		m_pMotorDrive->LRMotorDrive( 60, 60 );
+//		m_pMotorDrive->LRMotorDrive( 80, 80 );
+
+//		m_pMotorDrive->LRMotorDrive( -20, -20 );	// しっぽモーターだけではパワー不足なので、タイヤで補助
+//		m_pMotorDrive->LRMotorDrive( -10, -10 );
+//		m_pMotorDrive->LRMotorDrive( -7, -7 );
 
 		m_pDeviceInterface->m_pCClock->sleep(4); // 4msec周期起動
 
@@ -384,12 +329,18 @@ float	ExtraStageLookUp::StandUpTail(
 		}
 	}
 
-	while(1){
-		if( fTailAngleO >= m_fTailAngleStand )	break;
+//	PauseEt(5000, fTailAngleO);	// ポーズ
 
+	// 上体をさらに起こす
+	while(1){
+//		if( fTailAngleO >= m_fTailAngleStand )	break;
+		if( fTailAngleO >= m_fTailAngleStand2 )	break;
+
+//		fTailAngleO	+= ( 0.1 );
 		fTailAngleO	+= ( 0.2 );
 		m_pMotorDrive->TailMotorDrive(fTailAngle);
-		m_pMotorDrive->LRMotorDrive( -1, -1 );
+//		m_pMotorDrive->LRMotorDrive( -1, -1 );
+//		m_pMotorDrive->LRMotorDrive( -3, -3 );
 
 		m_pDeviceInterface->m_pCClock->sleep(4); // 4msec周期起動
 
@@ -403,7 +354,7 @@ float	ExtraStageLookUp::StandUpTail(
 
 }
 
-// しっぽを立てる
+// しっぽを最終状態に立てる
 float	ExtraStageLookUp::StandUpTailFine(
 		float	fTailAngle
 		)
@@ -414,14 +365,13 @@ float	ExtraStageLookUp::StandUpTailFine(
 	while(1){
 		if( fTailAngleO >= m_fTailAngleStandFine )	break;
 
-		fTailAngleO	+= ( 0.2 );
+		fTailAngleO	+= ( 0.1 );
 		m_pMotorDrive->TailMotorDrive(fTailAngle);
 		m_pMotorDrive->LRMotorDrive( 0, 0 );
 
 		m_pDeviceInterface->m_pCClock->sleep(4); // 4msec周期起動
 
 		if( IsKeyBreak(fTailAngleO) ){
-			//fTailAngle	= fTailAngleS;
 			break;		// キーボード入力による強制ブレイク
 		}
 	}
@@ -430,12 +380,9 @@ float	ExtraStageLookUp::StandUpTailFine(
 
 }
 
-
-
-
 // 指定距離移動
 void ExtraStageLookUp::MoveDist(
-		char	cLRsw,
+		char	cLRsw,			// ライントレース位置 'L':左、'R':右、'N':トレースなし
 		int		nDist,			// 移動距離　mm単位
 		float	fTailAngle,
 		int		nForward
@@ -444,6 +391,8 @@ void ExtraStageLookUp::MoveDist(
 	//-----ログ出力-----
 	char*	cLogBuff	= m_pUIGet->GetBlueT()->pcLogBuff;
 	//------------------
+
+	DV	dv;
 
 	int32_t		nLmotorCountS = m_pDeviceInterface->m_pCLeftMotor->getCount();
 	int32_t		nRmotorCountS = m_pDeviceInterface->m_pCRightMotor->getCount();
@@ -456,22 +405,33 @@ void ExtraStageLookUp::MoveDist(
 		int32_t		nRunCount	= nMotorCountN - nMotorCountS;
 		double		dRunDist	= GetRunDistance(nRunCount);	//オフセット付き角位置から距離mmに変換
 
-		//-----ログ出力-----
-		sprintf(cLogBuff,"MoveDist  %lu, nDist=%d, nRunCount=%ld, dRunDist=%f\n", GetElapsedTime(),
-				nDist, nRunCount, dRunDist);
-		m_pUIGet->WriteLog(cLogBuff);
-		//------------------
-
 		if( dRunDist >= (double)nDist ){
+			//-----ログ出力-----
+			sprintf(cLogBuff,"MoveDist  %lu, nDist=%d, nRunCount=%ld, dRunDist=%f\n", GetElapsedTime(),
+					nDist, nRunCount, dRunDist);
+			m_pUIGet->WriteLog(cLogBuff);
+			//------------------
 			break;
 		}
 
 		// ライントレース制御
-		DV	dv	= CalcuTraceMoterPower( cLRsw, nForward );
+		dv	= CalcuTraceMoterPower( cLRsw, nForward );
 
 		// モータードライブ
 		m_pMotorDrive->TailMotorDrive(fTailAngle);
 		m_pMotorDrive->LRMotorDrive( dv.Lmotor_pwm, dv.Rmotor_pwm );
+
+		//ログ出力
+		sprintf(cLogBuff,"ExtraRun MoveDist %lu, cLRsw=[%c], nDist=%d,  fTailAngle=%f, nForward=%d, color=%d, Lmotor_pwm=%d, Rmotor_pwm=%d\n",
+				GetElapsedTime(),
+				cLRsw,
+				nDist,
+				fTailAngle,
+				nForward,
+				dv.color,
+				dv.Lmotor_pwm, dv.Rmotor_pwm
+		);
+
 		m_pDeviceInterface->m_pCClock->sleep(4); // 4msec周期起動
 
 		if( IsKeyBreak(fTailAngle) )	break;
@@ -652,6 +612,12 @@ DV	ExtraStageLookUp::CalcuTraceMoterPower(
 	rd.KI	= 0.0;
 	rd.KD	= 0.0;
 	rd.forward	= 10;
+
+
+	dv.color = dv.color * 2 - 4;	// しっぽを出した状態の輝度 BBBBBBBBBBB
+	if( dv.color < 1 )	dv.color	= 1;
+
+
 
 	//PID計算する
 	double	dTurn = mPIDCalculation.PIDCalculate(rd,dv.color);
