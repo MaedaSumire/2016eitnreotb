@@ -110,7 +110,7 @@ void main_task(intptr_t unused) {
 	 */
 
 	/*競技走行*/
-	gCompetitionrunning->CompetitionRun();
+	//gCompetitionrunning->CompetitionRun();
 
 	// Lコース
 	if (gCourse == 1) {

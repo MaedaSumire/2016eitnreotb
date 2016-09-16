@@ -11,6 +11,7 @@ ExtraStageStep::ExtraStageStep(DeviceInterface* deviceinterface, UIGet* UiGet,
 	m_pUIGet = UiGet;
 	m_pCalibrationController = gCalibrationController;
 
+	m_fTailAngleStand = 84;	// しっぽ立ち上がり
 }
 
 extern int gCourse;
@@ -19,6 +20,7 @@ extern int gCourse;
 void ExtraStageStep::ExtraRun() {
 	CALIBRAT calib = m_pCalibrationController->GetValue();
 	float fTailSabun = calib.TailAngleStandUp - 93.0;
+	float	fTailAngle = m_fTailAngleStand;	// しっぽ立ち上がり
 
 	DV dv_old;
 	DV dv_now = m_pDeviceValueGet->DeviceValueGetter();
@@ -259,6 +261,9 @@ void ExtraStageStep::ExtraRun() {
 
 			if (m_pDeviceInterface->m_pCClock->now() - colisionTime < 2000)
 				dv_now = m_pRunningCalculation->RunningCalculate(dv_now, 3);
+			else if(dv_now.Rmotor_angle - tempRmotor < 300){
+				break;
+			}
 			else {
 				dv_now = m_pRunningCalculation->RunningCalculate(dv_now,
 						now_section);
@@ -278,6 +283,85 @@ void ExtraStageStep::ExtraRun() {
 
 	}
 
-	/*ガレージイン！*/
+	// ゲートに届かなかった場合を考慮して、微速前進とポーズを繰り返す
+	// ※ゲートイン判定が出た後は、ゲートにぶつかってもお構いなしなはず
+	for (int i = 0; i < 5; i++) {
+		MoveDist('N', 30, 80, 5);	// ゲートまで再度トライ
+		PauseEt(4000, 80);	// ポーズ
+	}
+	MoveDist('N', 30, 80, 5);	// ゲートまで再度トライ
+
+	//	Ending();
+
+	PauseEt(5000, 80);	// ポーズ
+
+	m_pDeviceInterface->m_pCClock->sleep(3); /* 4msec周期起動 */
+}
+
+void ExtraStageStep::MoveDist(
+		char	cLRsw,			// ライントレース位置 'L':左、'R':右、'N':トレースなし
+		int		nDist,			// 移動距離　mm単位
+		float	fTailAngle,
+		int		nForward
+		)
+{
+
+	DV	dv;
+
+	int32_t		nLmotorCountS = m_pDeviceInterface->m_pCLeftMotor->getCount();
+	int32_t		nRmotorCountS = m_pDeviceInterface->m_pCRightMotor->getCount();
+	int32_t		nMotorCountS  = ( nLmotorCountS + nRmotorCountS ) / 2;
+	while(1){
+		int32_t		nLmotorCountN = m_pDeviceInterface->m_pCLeftMotor->getCount();
+		int32_t		nRmotorCountN = m_pDeviceInterface->m_pCRightMotor->getCount();
+		int32_t		nMotorCountN  = ( nLmotorCountN + nRmotorCountN ) / 2;
+
+		int32_t		nRunCount	= nMotorCountN - nMotorCountS;
+		double		dRunDist	= GetRunDistance(nRunCount);	//オフセット付き角位置から距離mmに変換
+
+		if( dRunDist >= (double)nDist ){
+			break;
+		}
+
+		// モータードライブ
+		m_pMotorDrive->TailMotorDrive(fTailAngle);
+		m_pMotorDrive->LRMotorDrive( dv.Lmotor_pwm, dv.Rmotor_pwm );
+
+		m_pDeviceInterface->m_pCClock->sleep(4); // 4msec周期起動
+	}
+}
+
+// 一時停止
+void ExtraStageStep::PauseEt(
+		int		nTime,		// 停止時間　ミリ秒
+		float	fTailAngle	// しっぽ角度
+		)
+{
+
+	uint32_t	uTimeStr	= m_pDeviceInterface->m_pCClock->now();
+	while(1){
+		m_pMotorDrive->TailMotorDrive(fTailAngle);
+		m_pMotorDrive->LRMotorDrive(0,0);
+		m_pDeviceInterface->m_pCClock->sleep(4); // 4msec周期起動
+
+		if( m_pDeviceInterface->m_pCClock->now() - uTimeStr > (uint32_t)nTime )	break;
+	}
+
+}
+
+// オフセット付き角位置から距離(mm)に変換
+double	ExtraStageStep::GetRunDistance(
+		double	dMotorCount
+		)
+{
+//	double	dPai		= 3.141592654;			// 円周率
+//	double	dTireDia	= 80.0;					// タイヤ直径　80mm
+//	double	dCircumference	= dTireDia * dPai;	// タイヤ円周
+//	double	dDistance	= dMotorCount / 360.0 * dCircumference;	// 走行距離
+//	return	dDistance;
+
+	double	dMm1Dec	= 1.4263;	// 1mmあたりの角度   実走行値から算出
+	double	dDistance	= dMotorCount / dMm1Dec;
+	return	dDistance;
 
 }
